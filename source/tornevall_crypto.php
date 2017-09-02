@@ -2,12 +2,12 @@
 
 namespace TorneLIB;
 
-if ( ! class_exists( 'TorneLIB_Crypto' ) ) {
+if ( ! class_exists( 'TorneLIB_Crypto' ) && ! class_exists( 'TorneLIB\TorneLIB_Crypto' ) ) {
 	/**
 	 * Class TorneLIB_Crypto
 	 *
 	 * @package TorneLIB
-	 * @version 6.0.0
+	 * @version 6.0.1
 	 */
 	class TorneLIB_Crypto {
 
