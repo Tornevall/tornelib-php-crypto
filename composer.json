@@ -18,10 +18,12 @@
   ],
   "autoload": {
     "files": [
-      "source/tornevall_crypto.php"
+      "source/tornevall_crypto.php",
+      "source/tornevall_io.php"
     ],
     "psr-4": {
-      "\\TorneLIB\\": "source/tornevall_crypto.php"
+      "\\TorneLIB\\": "source/tornevall_crypto.php",
+      "\\TorneLIB\\": "source/tornevall_io.php"
     }
   }
 }
