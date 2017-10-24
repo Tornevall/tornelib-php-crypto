@@ -40,7 +40,28 @@ class TorneLIB_IOTest extends TestCase {
 	}
 
 	function testArrayToObject() {
-		$convert = $this->IO->arrayObjectToStdClass($this->arr);
-		$this->assertTrue(isset($convert->a) && is_object($convert->b) && isset($convert->b->c) && $convert->b->c == "d");
+		$convert = $this->IO->arrayObjectToStdClass( $this->arr );
+		$this->assertTrue( isset( $convert->a ) && is_object( $convert->b ) && isset( $convert->b->c ) && $convert->b->c == "d" );
+	}
+
+	function testRenderJsonApiLike() {
+		$this->assertTrue( strlen( $this->IO->renderJson( $this->obj ) ) >= 170 );
+	}
+
+	function testRenderSerializedApiLike() {
+		$this->assertTrue( strlen( $this->IO->renderPhpSerialize( $this->obj ) ) >= 153 );
+	}
+
+	function testRenderYamlApiLike() {
+		try {
+			$yamlString = $this->IO->renderYaml( $this->obj );
+		} catch ( \Exception $yamlException ) {
+
+		}
+		$this->assertTrue( strlen( $yamlString ) >= 90 );
+	}
+
+	function testRenderXmlApiLike() {
+		$this->assertTrue( strlen( $this->IO->renderXml( $this->obj ) ) >= 248 );
 	}
 }

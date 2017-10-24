@@ -16,7 +16,7 @@
  * limitations under the License.
  *
  * @package TorneLIB
- * @version 6.0.2
+ * @version 6.0.1
  */
 
 namespace TorneLIB;
@@ -92,5 +92,128 @@ if ( ! class_exists( 'TorneLIB_IO' ) && ! class_exists( 'TorneLIB\TorneLIB_IO' )
 
 			return $arrData;
 		}
+
+		/**
+		 * Convert all data to utf8
+		 *
+		 * @param array $dataArray
+		 *
+		 * @return array
+		 */
+		private function getUtf8( $dataArray = array() ) {
+			$newArray = array();
+			if ( is_array( $dataArray ) ) {
+				foreach ( $dataArray as $p => $v ) {
+					if ( is_array( $v ) || is_object( $v ) ) {
+						$v              = $this->getUtf8( $v );
+						$newArray[ $p ] = $v;
+					} else {
+						$v              = utf8_encode( $v );
+						$newArray[ $p ] = $v;
+					}
+
+				}
+			}
+
+			return $newArray;
+		}
+
+		/**
+		 * ServerRenderer: Render JSON data
+		 *
+		 * @param array $contentData
+		 * @param bool $renderAndDie
+		 *
+		 * @return string
+		 */
+		public function renderJson( $contentData = array(), $renderAndDie = false ) {
+			$objectArrayEncoded = $this->getUtf8( $this->objectsIntoArray( $contentData ) );
+			$contentRendered = json_encode( $objectArrayEncoded, JSON_PRETTY_PRINT );
+
+			if ($renderAndDie) {
+				header( "Content-type: application/json; charset=utf-8" );
+				echo $contentRendered;
+				die;
+			}
+			return $contentRendered;
+		}
+
+		/**
+		 * ServerRenderer: PHP serialized
+		 *
+		 * @param array $contentData
+		 * @param bool $renderAndDie
+		 *
+		 * @return string
+		 */
+		public function renderPhpSerialize( $contentData = array(), $renderAndDie = false ) {
+			$contentRendered = serialize($contentData);
+			if ($renderAndDie) {
+				header("Content-Type: text/plain");
+				echo $contentRendered;
+				die;
+			}
+			return $contentRendered;
+		}
+
+		/**
+		 * ServerRenderer: Render yaml data
+		 *
+		 * Install:
+		 *  apt-get install libyaml-dev
+		 *  pecl install yaml
+		 *
+		 * @param array $contentData
+		 * @param bool $renderAndDie
+		 *
+		 * @return string
+		 * @throws \Exception
+		 */
+		public function renderYaml( $contentData = array(), $renderAndDie = false ) {
+			$objectArrayEncoded = $this->getUtf8( $this->objectsIntoArray( $contentData ) );
+			if (function_exists('yaml_emit')) {
+				$contentRendered = yaml_emit($objectArrayEncoded);
+				if ($renderAndDie) {
+					header( "Content-Type: text/plain" );
+					echo $contentRendered;
+					die;
+				}
+				return $contentRendered;
+			} else {
+				throw new \Exception( "yaml_emit not supported - ask your admin to install the driver", 404 );
+			}
+		}
+
+		public function renderXml( $contentData = array(), $renderAndDie = false ) {
+			$serializerPath = stream_resolve_include_path('XML/Serializer.php');
+			if (!empty($serializerPath)) {
+				require_once('XML/Serializer.php');
+			}
+			$objectArrayEncoded = $this->getUtf8( $this->objectsIntoArray( $contentData ) );
+			$options = array(
+				'indent' => '    ',
+				'linebreak' => "\n",
+				'encoding' => 'UTF-8',
+				'rootName' => 'TorneAPIXMLResponse',
+				'defaultTagName' => 'item'
+			);
+			if (class_exists('XML_Serializer')) {
+				$xmlSerializer = new \XML_Serializer($options);
+				$xmlSerializer->serialize($objectArrayEncoded);
+				$contentRendered = $xmlSerializer->getSerializedData();
+			} else {
+				$xml = new \SimpleXMLElement('<?xml version="1.0"?><data></data>');
+				$this->array_to_xml($objectArrayEncoded, $xml);
+				$contentRendered = $xml->asXML();
+			}
+
+			if ($renderAndDie) {
+				header("Content-Type: application/xml");
+				echo $contentRendered;
+				die;
+			}
+			return $contentRendered;
+		}
+
 	}
 }
