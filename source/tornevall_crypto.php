@@ -251,14 +251,14 @@ if ( ! class_exists( 'TorneLIB_Crypto' ) && ! class_exists( 'TorneLIB\TorneLIB_C
 		 * @param bool $asBase64
 		 *
 		 * @return string
-		 * @throws TorneLIB_Exception
+		 * @throws \Exception
 		 */
 		public function aesEncrypt( $decryptedContent = "", $asBase64 = true ) {
 			$useKey      = $this->aesKey;
 			$useIv       = $this->aesIv;
 			$contentData = $decryptedContent;
 			if ( $useKey == md5( md5( "TorneLIB Default IV - Please Change this" ) ) || $useIv == md5( md5( "TorneLIB Default IV - Please Change this" ) ) ) {
-				throw new TorneLIB_Exception( "Current encryption key and iv is not allowed to use.", TORNELIB_EXCEPTIONS::TORNELIB_CRYPTO_KEY_EXCEPTION, __FUNCTION__ );
+				throw new \Exception( "Current encryption key and iv is not allowed to use.");  // TODO: TORNELIB_EXCEPTIONS::TORNELIB_CRYPTO_KEY_EXCEPTION
 			}
 			if ( is_string( $decryptedContent ) ) {
 				$contentData = utf8_encode( $decryptedContent );
@@ -280,13 +280,13 @@ if ( ! class_exists( 'TorneLIB_Crypto' ) && ! class_exists( 'TorneLIB\TorneLIB_C
 		 * @param bool $asBase64
 		 *
 		 * @return string
-		 * @throws TorneLIB_Exception
+		 * @throws \Exception
 		 */
 		public function aesDecrypt( $encryptedContent = "", $asBase64 = true ) {
 			$useKey = $this->aesKey;
 			$useIv  = $this->aesIv;
 			if ( $useKey == md5( md5( "TorneLIB Default IV - Please Change this" ) ) || $useIv == md5( md5( "TorneLIB Default IV - Please Change this" ) ) ) {
-				throw new TorneLIB_Exception( "Current encryption key and iv is not allowed to use.", TORNELIB_EXCEPTIONS::TORNELIB_CRYPTO_KEY_EXCEPTION, __FUNCTION__ );
+				throw new \Exception( "Current encryption key and iv is not allowed to use." );  // TODO: TORNELIB_EXCEPTIONS::TORNELIB_CRYPTO_KEY_EXCEPTION
 			}
 			$contentData = $encryptedContent;
 			if ( $asBase64 ) {
