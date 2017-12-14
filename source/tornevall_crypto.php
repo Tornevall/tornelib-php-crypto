@@ -55,7 +55,7 @@ if ( ! class_exists( 'TorneLIB_Crypto' ) && ! class_exists( 'TorneLIB\TorneLIB_C
 		 *
 		 * @return string
 		 */
-		function mkpass( $complexity = 4, $setMax = 8, $webFriendly = false ) {
+		function mkpass_deprecated( $complexity = 4, $setMax = 8, $webFriendly = false ) {
 			$returnString       = null;
 			$characterListArray = array(
 				'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
@@ -109,6 +109,76 @@ if ( ! class_exists( 'TorneLIB_Crypto' ) && ! class_exists( 'TorneLIB\TorneLIB_C
 			}
 
 			return $returnString;
+		}
+
+		private function getCharacterListArray($type = 'upper') {
+			$compiledArray = array(
+				'upper' => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+				'lower' => 'abcdefghijklmnopqrstuvwxyz',
+				'numeric' => '0123456789',
+				'specials' => '!@#$%*?',
+				'table' => ''
+			);
+			for ($i = 0 ; $i <= 255 ; $i++) { $compiledArray['table'] .= chr($i); }
+			if (is_null($type)) {
+				return $compiledArray;
+			} else if ($type == "lower") {
+				return $compiledArray['lower'];
+			} else if ($type == "numeric") {
+				return $compiledArray['numeric'];
+			} else if ($type == "specials") {
+				return $compiledArray['specials'];
+			} else if ($type == "table") {
+				return $compiledArray['table'];
+			} else {
+				return $compiledArray['upper'];
+			}
+		}
+		private function getCharactersFromList($type = 'upper') {
+			return preg_split("//", $this->getCharacterListArray($type), -1, PREG_SPLIT_NO_EMPTY);
+		}
+		private function getRandomCharacterFromArray($type = array('upper'), $ambigous = false) {
+			if (is_string($type)) {
+				$type = array($type);
+			}
+			$getType = $type[rand(0, count($type)-1)];
+			$characterArray = $this->getCharactersFromList($getType);
+			$characterLength = count($characterArray)-1;
+			$chosenCharacter = $characterArray[rand(0, $characterLength)];
+			$ambigousList = array(
+				'+', '/', '=', 'I', 'G', '0', 'O', 'D', 'Q', 'R'
+			);
+			if (in_array($chosenCharacter, $ambigousList)) {
+				$chosenCharacter = $this->getRandomCharacterFromArray($type, $ambigous);
+			}
+			return $chosenCharacter;
+		}
+
+		private function getCharacterFromComplexity($complexity = 4, $ambigous = false) {
+			switch ($complexity) {
+				case 1:
+					return $this->getRandomCharacterFromArray(array('upper'), $ambigous);
+				case 2:
+					return $this->getRandomCharacterFromArray(array('upper', 'lower'), $ambigous);
+				case 3:
+					return $this->getRandomCharacterFromArray(array('upper', 'lower', 'numeric'), $ambigous);
+				case 4:
+					return $this->getRandomCharacterFromArray(array('upper', 'lower', 'numeric', 'specials'), $ambigous);
+				case 5:
+					return $this->getRandomCharacterFromArray(array('table'));
+				case 6:
+					return $this->getRandomCharacterFromArray(array('table'));
+				default:
+					return $this->getRandomCharacterFromArray('upper', $ambigous);
+			}
+		}
+
+		public function mkpass($compexity = 4, $setMax = 8, $ambigous = false) {
+			$pwString = "";
+			for ($charIndex = 0 ; $charIndex < $setMax ; $charIndex ++) {
+				$pwString .= $this->getCharacterFromComplexity($compexity, $ambigous);
+			}
+			return $pwString;
 		}
 
 		/**
