@@ -218,9 +218,9 @@ if ( ! class_exists( 'TorneLIB_Crypto' ) && ! class_exists( 'TorneLIB\TorneLIB_C
 		 * @return string
 		 * @since 6.0.4
 		 */
-		public function mkpass($compexity = 4, $totalLength = 8, $ambigous = false) {
+		public function mkpass($compexity = 4, $totalLength = 16, $ambigous = false) {
 			$pwString = "";
-			for ($charIndex = 0 ; $charIndex < $setMax ; $charIndex ++) {
+			for ($charIndex = 0 ; $charIndex < $totalLength ; $charIndex ++) {
 				$pwString .= $this->getCharacterFromComplexity($compexity, $ambigous);
 			}
 			return $pwString;
