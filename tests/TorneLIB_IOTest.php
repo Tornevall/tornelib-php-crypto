@@ -65,7 +65,11 @@ class TorneLIB_IOTest extends TestCase {
 	}
 
 	function testRenderXmlApiLike() {
-		$this->assertTrue( strlen( $this->IO->renderXml( $this->obj ) ) == 248 );
+		if ( class_exists( 'XML_Serializer' ) ) {
+			$this->assertTrue( strlen( $this->IO->renderXml( $this->obj ) ) == 248 );
+		} else {
+			$this->markTestIncomplete("Primary class for this test (XML_Serializer) is missing on this system");
+		}
 	}
 
 	function testRenderSimpleXmlApiLike() {
