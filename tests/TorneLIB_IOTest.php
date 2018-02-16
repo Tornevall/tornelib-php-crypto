@@ -59,7 +59,7 @@ class TorneLIB_IOTest extends TestCase {
 		try {
 			$yamlString = $this->IO->renderYaml( $this->obj );
 		} catch ( \Exception $yamlException ) {
-			$this->markTestIncomplete($yamlException->getMessage());
+			$this->markTestSkipped($yamlException->getMessage());
 		}
 		$this->assertTrue( strlen( $yamlString ) == 90 );
 	}
@@ -68,7 +68,7 @@ class TorneLIB_IOTest extends TestCase {
 		if ( class_exists( 'XML_Serializer' ) ) {
 			$this->assertTrue( strlen( $this->IO->renderXml( $this->obj ) ) == 248 );
 		} else {
-			$this->markTestIncomplete("Primary class for this test (XML_Serializer) is missing on this system");
+			$this->markTestSkipped("Primary class for this test (XML_Serializer) is missing on this system");
 		}
 	}
 
@@ -85,7 +85,7 @@ class TorneLIB_IOTest extends TestCase {
 		if (function_exists('bzcompress')) {
 			$this->assertTrue( strlen( $this->IO->renderJson( $this->obj, false, \TorneLIB\TORNELIB_CRYPTO_TYPES::TYPE_BZ2 ) ) == 148 );
 		} else {
-			$this->markTestIncomplete('bzcompress is missing on this server, could not complete test');
+			$this->markTestSkipped('bzcompress is missing on this server, could not complete test');
 		}
 	}
 

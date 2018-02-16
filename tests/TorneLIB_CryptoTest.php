@@ -52,7 +52,7 @@ class TorneLIB_CryptoTest extends TestCase {
 			$bzString = $this->Crypto->base64_bzencode( $this->testCompressString );
 			$this->assertTrue( $bzString == $this->bzBase );
 		} else {
-			$this->markTestIncomplete('bzcompress is missing on this server, could not complete test');
+			$this->markTestSkipped('bzcompress is missing on this server, could not complete test');
 		}
 	}
 
@@ -61,7 +61,7 @@ class TorneLIB_CryptoTest extends TestCase {
 		$bzString = $this->Crypto->base64_bzdecode( $this->bzBase );
 		$this->assertTrue( $bzString == $this->testCompressString );
 		} else {
-			$this->markTestIncomplete('bzcompress is missing on this server, could not complete test');
+			$this->markTestSkipped('bzcompress is missing on this server, could not complete test');
 		}
 	}
 
