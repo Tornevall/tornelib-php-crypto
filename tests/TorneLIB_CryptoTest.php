@@ -48,13 +48,21 @@ class TorneLIB_CryptoTest extends TestCase {
 	}
 
 	function testBase64BzEncode() {
-		$bzString = $this->Crypto->base64_bzencode( $this->testCompressString );
-		$this->assertTrue( $bzString == $this->bzBase );
+		if (function_exists('bzcompress')) {
+			$bzString = $this->Crypto->base64_bzencode( $this->testCompressString );
+			$this->assertTrue( $bzString == $this->bzBase );
+		} else {
+			$this->markTestIncomplete('bzcompress is missing on this server, could not complete test');
+		}
 	}
 
 	function testBase64BzDecode() {
+		if (function_exists('bzcompress')) {
 		$bzString = $this->Crypto->base64_bzdecode( $this->bzBase );
 		$this->assertTrue( $bzString == $this->testCompressString );
+		} else {
+			$this->markTestIncomplete('bzcompress is missing on this server, could not complete test');
+		}
 	}
 
 	function testBestCompression() {
