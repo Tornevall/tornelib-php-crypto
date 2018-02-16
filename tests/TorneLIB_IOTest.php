@@ -47,11 +47,11 @@ class TorneLIB_IOTest extends TestCase {
 	}
 
 	function testRenderJsonApiLike() {
-		$this->assertTrue( strlen( $this->IO->renderJson( $this->obj ) ) >= 170 );
+		$this->assertTrue( strlen( $this->IO->renderJson( $this->obj ) ) == 170 );
 	}
 
 	function testRenderSerializedApiLike() {
-		$this->assertTrue( strlen( $this->IO->renderPhpSerialize( $this->obj ) ) >= 153 );
+		$this->assertTrue( strlen( $this->IO->renderPhpSerialize( $this->obj ) ) == 153 );
 	}
 
 	function testRenderYamlApiLike() {
@@ -60,11 +60,16 @@ class TorneLIB_IOTest extends TestCase {
 		} catch ( \Exception $yamlException ) {
 
 		}
-		$this->assertTrue( strlen( $yamlString ) >= 90 );
+		$this->assertTrue( strlen( $yamlString ) == 90 );
 	}
 
 	function testRenderXmlApiLike() {
-		$this->assertTrue( strlen( $this->IO->renderXml( $this->obj ) ) >= 248 );
+		$this->assertTrue( strlen( $this->IO->renderXml( $this->obj ) ) == 248 );
+	}
+
+	function testRenderSimpleXmlApiLike() {
+		$this->IO->setXmlSimple(true);
+		$this->assertTrue( strlen( $this->IO->renderXml( $this->obj ) ) == 156 );
 	}
 
 	function testRenderGzCompressedJsonApiLike() {
