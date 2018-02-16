@@ -28,6 +28,7 @@ if ( ! class_exists( 'TorneLIB_IO' ) && ! class_exists( 'TorneLIB\TorneLIB_IO' )
 		 * @var TorneLIB_Crypto $CRYPTO
 		 */
 		private $CRYPTO;
+		private $ENFORCE_SIMPLEXML = false;
 
 		public function __construct() {
 		}
@@ -265,6 +266,38 @@ if ( ! class_exists( 'TorneLIB_IO' ) && ! class_exists( 'TorneLIB\TorneLIB_IO' )
 		}
 
 		/**
+		 * @param bool $enforceSimpleXml
+		 */
+		public function setXmlSimple($enforceSimpleXml = true) {
+			$this->ENFORCE_SIMPLEXML = $enforceSimpleXml;
+		}
+
+		/**
+		 * @return bool
+		 */
+		public function getXmlSimple() {
+			return $this->ENFORCE_SIMPLEXML;
+		}
+
+		/**
+		 * @param array $dataArray
+		 * @param SimpleXMLElement $xml
+		 *
+		 * @return mixed
+		 */
+		private function array_to_xml($dataArray = array(), $xml) {
+			foreach ($dataArray as $key => $value) {
+				$key = is_numeric($key) ? 'item' : $key;
+				if (is_array($value)) {
+					$this->array_to_xml($value, $xml->addChild($key));
+				} else {
+					$xml->addChild($key, $value);
+				}
+			}
+			return $xml;
+		}
+
+		/**
 		 * @param array $contentData
 		 * @param bool $renderAndDie
 		 * @param int $compression
@@ -285,7 +318,7 @@ if ( ! class_exists( 'TorneLIB_IO' ) && ! class_exists( 'TorneLIB\TorneLIB_IO' )
 				'rootName'       => 'TorneAPIXMLResponse',
 				'defaultTagName' => 'item'
 			);
-			if ( class_exists( 'XML_Serializer' ) ) {
+			if ( class_exists( 'XML_Serializer' ) && !$this->ENFORCE_SIMPLEXML ) {
 				$xmlSerializer = new \XML_Serializer( $options );
 				$xmlSerializer->serialize( $objectArrayEncoded );
 				$contentRendered = $xmlSerializer->getSerializedData();
