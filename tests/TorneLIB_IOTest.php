@@ -3,7 +3,9 @@
 use TorneLIB\TorneLIB_IO;
 use PHPUnit\Framework\TestCase;
 
-require_once( '../vendor/autoload.php' );
+if ( file_exists( __DIR__ . '/../vendor/autoload.php' ) ) {
+	require_once( __DIR__ . '/../vendor/autoload.php' );
+}
 
 class TorneLIB_IOTest extends TestCase {
 
@@ -64,4 +66,18 @@ class TorneLIB_IOTest extends TestCase {
 	function testRenderXmlApiLike() {
 		$this->assertTrue( strlen( $this->IO->renderXml( $this->obj ) ) >= 248 );
 	}
+
+	function testRenderGzCompressedJsonApiLike() {
+		$this->assertTrue( strlen( $this->IO->renderJson( $this->obj, false, \TorneLIB\TORNELIB_CRYPTO_TYPES::TYPE_GZ ) ) == 123 );
+	}
+
+	function testRenderBz2CompressedJsonApiLike() {
+		$this->assertTrue( strlen( $this->IO->renderJson( $this->obj, false, \TorneLIB\TORNELIB_CRYPTO_TYPES::TYPE_BZ2 ) ) == 148 );
+	}
+
+	function testRenderGzSerializedApiLike() {
+		$this->IO->setCompressionLevel( 9 );
+		$this->assertTrue( strlen( $this->IO->renderPhpSerialize( $this->obj, false, \TorneLIB\TORNELIB_CRYPTO_TYPES::TYPE_GZ ) ) == 156 );
+	}
+
 }
