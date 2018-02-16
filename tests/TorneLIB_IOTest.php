@@ -55,10 +55,11 @@ class TorneLIB_IOTest extends TestCase {
 	}
 
 	function testRenderYamlApiLike() {
+		$yamlString = null;
 		try {
 			$yamlString = $this->IO->renderYaml( $this->obj );
 		} catch ( \Exception $yamlException ) {
-
+			$this->markTestIncomplete($yamlException->getMessage());
 		}
 		$this->assertTrue( strlen( $yamlString ) == 90 );
 	}
@@ -77,7 +78,11 @@ class TorneLIB_IOTest extends TestCase {
 	}
 
 	function testRenderBz2CompressedJsonApiLike() {
-		$this->assertTrue( strlen( $this->IO->renderJson( $this->obj, false, \TorneLIB\TORNELIB_CRYPTO_TYPES::TYPE_BZ2 ) ) == 148 );
+		if (function_exists('bzcompress')) {
+			$this->assertTrue( strlen( $this->IO->renderJson( $this->obj, false, \TorneLIB\TORNELIB_CRYPTO_TYPES::TYPE_BZ2 ) ) == 148 );
+		} else {
+			$this->markTestIncomplete('bzcompress is missing on this server, could not complete test');
+		}
 	}
 
 	function testRenderGzSerializedApiLike() {
