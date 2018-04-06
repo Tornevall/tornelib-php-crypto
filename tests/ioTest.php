@@ -75,13 +75,18 @@ class ioTest extends TestCase {
 	 * @test
 	 */
 	function renderYamlApiLike() {
-		$yamlString = null;
-		try {
-			$yamlString = $this->IO->renderYaml( $this->obj );
-		} catch ( \Exception $yamlException ) {
-			static::markTestSkipped( $yamlException->getMessage() );
+		if ( function_exists( 'yaml_parse' ) ) {
+			$yamlString = null;
+			try {
+				$yamlString = $this->IO->renderYaml( $this->obj );
+			} catch ( \Exception $yamlException ) {
+				static::markTestSkipped( $yamlException->getMessage() );
+			}
+			static::assertTrue( strlen( $yamlString ) == 90 );
+		} else {
+			static::markTestSkipped( "Yaml parser is not installed at this platform" );
 		}
-		static::assertTrue( strlen( $yamlString ) == 90 );
+
 	}
 
 	/**
@@ -192,7 +197,7 @@ class ioTest extends TestCase {
 			$yamlObject = $this->IO->getFromYaml( $yaml, false );
 			static::assertTrue( is_array( $yamlArray ) && is_object( $yamlObject ) && isset( $yamlArray['a'] ) && isset( $yamlObject->a ) );
 		} else {
-			static::markTestSkipped("Yaml parser is not installed at this platform");
+			static::markTestSkipped( "Yaml parser is not installed at this platform" );
 		}
 	}
 
@@ -201,11 +206,14 @@ class ioTest extends TestCase {
 	 * @throws Exception
 	 */
 	function getFromBadYaml() {
-
-		try {
-			$this->IO->getFromYaml( null );
-		} catch ( \Exception $e ) {
-			static::assertStringEndsWith( 'end of stream reached without finding document 0', $e->getMessage() );
+		if ( function_exists( 'yaml_parse' ) ) {
+			try {
+				$this->IO->getFromYaml( null );
+			} catch ( \Exception $e ) {
+				static::assertStringEndsWith( 'end of stream reached without finding document 0', $e->getMessage() );
+			}
+		} else {
+			static::markTestSkipped( "Yaml parser is not installed at this platform" );
 		}
 	}
 
