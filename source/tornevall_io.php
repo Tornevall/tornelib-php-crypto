@@ -218,14 +218,15 @@ if (!class_exists('TorneLIB_IO') && !class_exists('TorneLIB\TorneLIB_IO')) {
             return array_keys($arrayData) !== range(0, count($arrayData) - 1);
         }
 
-        /**
-         * @param string $contentString
-         * @param int $compression
-         * @param bool $renderAndDie
-         *
-         * @return string
-         * @since 6.0.3
-         */
+	    /**
+	     * @param string $contentString
+	     * @param int $compression
+	     * @param bool $renderAndDie
+	     *
+	     * @return string
+	     * @throws \Exception
+	     * @since 6.0.3
+	     */
         private function compressString($contentString = '', $compression = TORNELIB_CRYPTO_TYPES::TYPE_NONE, $renderAndDie = false)
         {
             if ($compression == TORNELIB_CRYPTO_TYPES::TYPE_GZ) {
@@ -247,16 +248,17 @@ if (!class_exists('TorneLIB_IO') && !class_exists('TorneLIB\TorneLIB_IO')) {
             return $contentString;
         }
 
-        /**
-         * ServerRenderer: Render JSON data
-         *
-         * @param array $contentData
-         * @param bool $renderAndDie
-         * @param int $compression
-         *
-         * @return string
-         * @since 6.0.1
-         */
+	    /**
+	     * ServerRenderer: Render JSON data
+	     *
+	     * @param array $contentData
+	     * @param bool $renderAndDie
+	     * @param int $compression
+	     *
+	     * @return string
+	     * @throws \Exception
+	     * @since 6.0.1
+	     */
         public function renderJson($contentData = array(), $renderAndDie = false, $compression = TORNELIB_CRYPTO_TYPES::TYPE_NONE)
         {
             $objectArrayEncoded = $this->getUtf8($this->objectsIntoArray($contentData));
@@ -271,16 +273,17 @@ if (!class_exists('TorneLIB_IO') && !class_exists('TorneLIB\TorneLIB_IO')) {
             return $contentRendered;
         }
 
-        /**
-         * ServerRenderer: PHP serialized
-         *
-         * @param array $contentData
-         * @param bool $renderAndDie
-         * @param int $compression
-         *
-         * @return string
-         * @since 6.0.1
-         */
+	    /**
+	     * ServerRenderer: PHP serialized
+	     *
+	     * @param array $contentData
+	     * @param bool $renderAndDie
+	     * @param int $compression
+	     *
+	     * @return string
+	     * @throws \Exception
+	     * @since 6.0.1
+	     */
         public function renderPhpSerialize($contentData = array(), $renderAndDie = false, $compression = TORNELIB_CRYPTO_TYPES::TYPE_NONE)
         {
             $contentRendered = $this->compressString(serialize($contentData), $compression, $renderAndDie);
@@ -325,14 +328,15 @@ if (!class_exists('TorneLIB_IO') && !class_exists('TorneLIB\TorneLIB_IO')) {
             }
         }
 
-        /**
-         * @param array $contentData
-         * @param bool $renderAndDie
-         * @param int $compression
-         *
-         * @return mixed
-         * @since 6.0.1
-         */
+	    /**
+	     * @param array $contentData
+	     * @param bool $renderAndDie
+	     * @param int $compression
+	     *
+	     * @return mixed
+	     * @throws \Exception
+	     * @since 6.0.1
+	     */
         public function renderXml($contentData = array(), $renderAndDie = false, $compression = TORNELIB_CRYPTO_TYPES::TYPE_NONE)
         {
             $serializerPath = stream_resolve_include_path('XML/Serializer.php');

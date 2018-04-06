@@ -8,7 +8,7 @@ if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
     require_once(__DIR__ . '/../vendor/autoload.php');
 }
 
-class TorneLIB_IOTest extends TestCase
+class ioTest extends TestCase
 {
 
     /** @var TorneLIB_IO $IO */
@@ -29,7 +29,7 @@ class TorneLIB_IOTest extends TestCase
     function setUp()
     {
         $this->IO = new TorneLIB_IO();
-        $this->PDU = new \TorneLIB\TorneLIB_PDU_Encoder();
+        //$this->PDU = new \TorneLIB\TorneLIB_PDU_Encoder();
         $this->obj = new stdClass();
         $this->obj->a = new stdClass();
         $this->obj->a->nextLevel = array(
