@@ -26,28 +26,46 @@ class TorneLIB_CryptoTest extends TestCase {
 		$this->Crypto              = new TorneLIB_Crypto();
 	}
 
-	function testBase64GzEncodeLevel0() {
+	/**
+	 * @test
+	 * @throws Exception
+	 */
+	function base64GzEncodeLevel0() {
 		$gzString = $this->Crypto->base64_gzencode( $this->testCompressString, 0 );
 		$this->assertTrue( $gzString == $this->gz0Base );
 	}
 
-	function testBase64GzEncodeLevel9() {
+	/**
+	 * @test
+	 * @throws Exception
+	 */
+	function base64GzEncodeLevel9() {
 		$myString = "Testing my string";
 		$gzString = $this->Crypto->base64_gzencode( $myString, 9 );
 		$this->assertTrue( $gzString == $this->gz9Base );
 	}
 
-	function testBase64GzDecodeLevel0() {
+	/**
+	 * @test
+	 */
+	function base64GzDecodeLevel0() {
 		$gzString = $this->Crypto->base64_gzdecode( $this->gz0Base );
 		$this->assertTrue( $gzString == $this->testCompressString );
 	}
 
-	function testBase64GzDecodeLevel9() {
+	/**
+	 * @test
+	 */
+	function base64GzDecodeLevel9() {
 		$gzString = $this->Crypto->base64_gzdecode( $this->gz9Base );
 		$this->assertTrue( $gzString == $this->testCompressString );
 	}
 
-	function testBase64BzEncode() {
+	/**
+	 * @test
+	 * @throws Exception
+	 */
+	function base64BzEncode() {
 		if (function_exists('bzcompress')) {
 			$bzString = $this->Crypto->base64_bzencode( $this->testCompressString );
 			$this->assertTrue( $bzString == $this->bzBase );
@@ -56,7 +74,11 @@ class TorneLIB_CryptoTest extends TestCase {
 		}
 	}
 
-	function testBase64BzDecode() {
+	/**
+	 * @test
+	 * @throws Exception
+	 */
+	function base64BzDecode() {
 		if (function_exists('bzcompress')) {
 		$bzString = $this->Crypto->base64_bzdecode( $this->bzBase );
 		$this->assertTrue( $bzString == $this->testCompressString );
@@ -65,7 +87,10 @@ class TorneLIB_CryptoTest extends TestCase {
 		}
 	}
 
-	function testBestCompression() {
+	/**
+	 * @test
+	 */
+	function bestCompression() {
 		$compressedString                  = $this->Crypto->base64_compress( $this->testLongCompressString );
 		$uncompressedString                = $this->Crypto->base64_decompress( $compressedString );
 		$uncompressedStringCompressionType = $this->Crypto->base64_decompress( $compressedString, true );
@@ -73,8 +98,18 @@ class TorneLIB_CryptoTest extends TestCase {
 		$this->assertTrue( $uncompressedString == $this->testLongCompressString && $uncompressedStringCompressionType == "gz9" );
 	}
 
-	function testMkPass() {
+	/**
+	 * @test
+	 */
+	function mkPass() {
 		$this->assertTrue(strlen($this->Crypto->mkpass(1, 16)) == 16);
+	}
+
+	/**
+	 * @test
+	 */
+	function randomSaltStaticMkPass() {
+		$this->assertTrue(strlen(TorneLIB_Crypto::getRandomSalt(1, 16)) == 16);
 	}
 
 }

@@ -16,328 +16,357 @@
  * limitations under the License.
  *
  * @package TorneLIB
- * @version 6.0.3
+ * @version 6.0.4
  */
 
 namespace TorneLIB;
 
-if ( ! class_exists( 'TorneLIB_IO' ) && ! class_exists( 'TorneLIB\TorneLIB_IO' ) ) {
-	class TorneLIB_IO {
+if (!class_exists('TorneLIB_IO') && !class_exists('TorneLIB\TorneLIB_IO')) {
+    class TorneLIB_IO
+    {
 
-		/**
-		 * @var TorneLIB_Crypto $CRYPTO
-		 */
-		private $CRYPTO;
-		private $ENFORCE_SIMPLEXML = false;
+        /** @var TorneLIB_Crypto $CRYPTO */
+        private $CRYPTO;
+        /** @var bool Enforce usage SimpleXML objects even if XML_Serializer is present */
+        private $ENFORCE_SIMPLEXML = false;
 
-		public function __construct() {
-		}
+        /** @var array 7 bit encoding table */
+        private $BIT7TABLE = array('@', '£', '$', '¥', 'è', 'é', 'ù', 'ì', 'ò', 'Ç', '\n', 'Ø', 'ø', '\r','Å', 'å','\u0394', '_', '\u03a6', '\u0393', '\u039b', '\u03a9', '\u03a0','\u03a8', '\u03a3', '\u0398', '\u039e','.', 'Æ', 'æ', 'ß', 'É', ' ', '!', '"', '#', '¤', '%', '&', '\'', '(', ')','*', '+', ',', '-', '.', '/', '0', '1', '2', '3', '4', '5', '6', '7','8', '9', ':', ';', '<', '=', '>', '?', '¡', 'A', 'B', 'C', 'D', 'E','F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S','T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'Ä', 'Ö', 'Ñ', 'Ü', '§', '¿', 'a','b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o','p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'ä', 'ö', 'ñ','ü', 'à');
 
-		function setCrypto() {
-			if (empty($this->CRYPTO)) {
-				$this->CRYPTO = new TorneLIB_Crypto();
-			}
-		}
+        public function __construct()
+        {
+        }
 
-		/**
-		 * Set and override compression level
-		 * @param int $compressionLevel
-		 */
-		function setCompressionLevel($compressionLevel = 9) {
-			$this->setCrypto();
-			$this->CRYPTO->setCompressionLevel($compressionLevel);
-		}
+        function setCrypto()
+        {
+            if (empty($this->CRYPTO)) {
+                $this->CRYPTO = new TorneLIB_Crypto();
+            }
+        }
 
-		/**
-		 * Get current compressionlevel
-		 * @return mixed
-		 */
-		public function getCompressionLevel() {
-			$this->setCrypto();
-			return $this->CRYPTO->getCompressionLevel();
-		}
+        /**
+         * Set and override compression level
+         *
+         * @param int $compressionLevel
+         * @since 6.0.3
+         */
+        function setCompressionLevel($compressionLevel = 9)
+        {
+            $this->setCrypto();
+            $this->CRYPTO->setCompressionLevel($compressionLevel);
+        }
 
-		/**
-		 * Convert object to a data object (used for repairing __PHP_Incomplete_Class objects)
-		 *
-		 * This function are written to work with WSDL2PHPGenerator, where serialization of some objects sometimes generates, as described, __PHP_Incomplete_Class objects.
-		 * The upgraded version are also supposed to work with protected values.
-		 *
-		 * @param array $objectArray
-		 * @param bool $useJsonFunction
-		 *
-		 * @return object
-		 * @since 6.0.0
-		 */
-		public function arrayObjectToStdClass( $objectArray = array(), $useJsonFunction = false ) {
-			/**
-			 * If json_decode and json_encode exists as function, do it the simple way.
-			 * http://php.net/manual/en/function.json-encode.php
-			 */
-			if ( ( function_exists( 'json_decode' ) && function_exists( 'json_encode' ) ) || $useJsonFunction ) {
-				return json_decode( json_encode( $objectArray ) );
-			}
-			$newArray = array();
-			if ( is_array( $objectArray ) || is_object( $objectArray ) ) {
-				foreach ( $objectArray as $itemKey => $itemValue ) {
-					if ( is_array( $itemValue ) ) {
-						$newArray[ $itemKey ] = (array) $this->arrayObjectToStdClass( $itemValue );
-					} elseif ( is_object( $itemValue ) ) {
-						$newArray[ $itemKey ] = (object) (array) $this->arrayObjectToStdClass( $itemValue );
-					} else {
-						$newArray[ $itemKey ] = $itemValue;
-					}
-				}
-			}
+        /**
+         * Get current compressionlevel
+         *
+         * @return mixed
+         * @since 6.0.3
+         */
+        public function getCompressionLevel()
+        {
+            $this->setCrypto();
+            return $this->CRYPTO->getCompressionLevel();
+        }
 
-			return $newArray;
-		}
+        /**
+         * @param bool $enforceSimpleXml
+         *
+         * @since 6.0.3
+         */
+        public function setXmlSimple($enforceSimpleXml = true)
+        {
+            $this->ENFORCE_SIMPLEXML = $enforceSimpleXml;
+        }
 
-		/**
-		 * Convert objects to arrays
-		 *
-		 * @param $arrObjData
-		 * @param array $arrSkipIndices
-		 *
-		 * @return array
-		 * @since 6.0.0
-		 */
-		public function objectsIntoArray( $arrObjData, $arrSkipIndices = array() ) {
-			$arrData = array();
-			// if input is object, convert into array
-			if ( is_object( $arrObjData ) ) {
-				$arrObjData = get_object_vars( $arrObjData );
-			}
-			if ( is_array( $arrObjData ) ) {
-				foreach ( $arrObjData as $index => $value ) {
-					if ( is_object( $value ) || is_array( $value ) ) {
-						$value = $this->objectsIntoArray( $value, $arrSkipIndices ); // recursive call
-					}
-					if ( @in_array( $index, $arrSkipIndices ) ) {
-						continue;
-					}
-					$arrData[ $index ] = $value;
-				}
-			}
+        /**
+         * @return bool
+         *
+         * @since 6.0.3
+         */
+        public function getXmlSimple()
+        {
+            return $this->ENFORCE_SIMPLEXML;
+        }
 
-			return $arrData;
-		}
+        /**
+         * Convert object to a data object (used for repairing __PHP_Incomplete_Class objects)
+         *
+         * This function are written to work with WSDL2PHPGenerator, where serialization of some objects sometimes generates, as described, __PHP_Incomplete_Class objects.
+         * The upgraded version are also supposed to work with protected values.
+         *
+         * @param array $objectArray
+         * @param bool $useJsonFunction
+         *
+         * @return object
+         * @since 6.0.0
+         */
+        public function arrayObjectToStdClass($objectArray = array(), $useJsonFunction = false)
+        {
+            /**
+             * If json_decode and json_encode exists as function, do it the simple way.
+             * http://php.net/manual/en/function.json-encode.php
+             */
+            if ((function_exists('json_decode') && function_exists('json_encode')) || $useJsonFunction) {
+                return json_decode(json_encode($objectArray));
+            }
+            $newArray = array();
+            if (is_array($objectArray) || is_object($objectArray)) {
+                foreach ($objectArray as $itemKey => $itemValue) {
+                    if (is_array($itemValue)) {
+                        $newArray[$itemKey] = (array)$this->arrayObjectToStdClass($itemValue);
+                    } elseif (is_object($itemValue)) {
+                        $newArray[$itemKey] = (object)(array)$this->arrayObjectToStdClass($itemValue);
+                    } else {
+                        $newArray[$itemKey] = $itemValue;
+                    }
+                }
+            }
 
-		/**
-		 * Convert all data to utf8
-		 *
-		 * @param array $dataArray
-		 *
-		 * @return array
-		 * @since 6.0.0
-		 */
-		private function getUtf8( $dataArray = array() ) {
-			$newArray = array();
-			if ( is_array( $dataArray ) ) {
-				foreach ( $dataArray as $p => $v ) {
-					if ( is_array( $v ) || is_object( $v ) ) {
-						$v              = $this->getUtf8( $v );
-						$newArray[ $p ] = $v;
-					} else {
-						$v              = utf8_encode( $v );
-						$newArray[ $p ] = $v;
-					}
+            return $newArray;
+        }
 
-				}
-			}
+        /**
+         * Convert objects to arrays
+         *
+         * @param $arrObjData
+         * @param array $arrSkipIndices
+         *
+         * @return array
+         * @since 6.0.0
+         */
+        public function objectsIntoArray($arrObjData, $arrSkipIndices = array())
+        {
+            $arrData = array();
+            // if input is object, convert into array
+            if (is_object($arrObjData)) {
+                $arrObjData = get_object_vars($arrObjData);
+            }
+            if (is_array($arrObjData)) {
+                foreach ($arrObjData as $index => $value) {
+                    if (is_object($value) || is_array($value)) {
+                        $value = $this->objectsIntoArray($value, $arrSkipIndices); // recursive call
+                    }
+                    if (@in_array($index, $arrSkipIndices)) {
+                        continue;
+                    }
+                    $arrData[$index] = $value;
+                }
+            }
 
-			return $newArray;
-		}
+            return $arrData;
+        }
 
-		/**
-		 * @param array $arrayData
-		 *
-		 * @return bool
-		 * @since 6.0.2
-		 */
-		function isAssoc( array $arrayData ) {
-			if ( array() === $arrayData ) {
-				return false;
-			}
+        /**
+         * @param array $dataArray
+         * @param SimpleXMLElement $xml
+         *
+         * @return mixed
+         * @since 6.0.3
+         */
+        private function array_to_xml($dataArray = array(), $xml)
+        {
+            foreach ($dataArray as $key => $value) {
+                $key = is_numeric($key) ? 'item' : $key;
+                if (is_array($value)) {
+                    $this->array_to_xml($value, $xml->addChild($key));
+                } else {
+                    $xml->addChild($key, $value);
+                }
+            }
+            return $xml;
+        }
 
-			return array_keys( $arrayData ) !== range( 0, count( $arrayData ) - 1 );
-		}
+        /**
+         * Convert all data to utf8
+         *
+         * @param array $dataArray
+         *
+         * @return array
+         * @since 6.0.0
+         */
+        private function getUtf8($dataArray = array())
+        {
+            $newArray = array();
+            if (is_array($dataArray)) {
+                foreach ($dataArray as $p => $v) {
+                    if (is_array($v) || is_object($v)) {
+                        $v = $this->getUtf8($v);
+                        $newArray[$p] = $v;
+                    } else {
+                        $v = utf8_encode($v);
+                        $newArray[$p] = $v;
+                    }
 
-		/**
-		 * @param string $contentString
-		 * @param int $compression
-		 * @param bool $renderAndDie
-		 *
-		 * @return string
-		 */
-		private function compressString( $contentString = '', $compression = TORNELIB_CRYPTO_TYPES::TYPE_NONE, $renderAndDie = false ) {
-			if ( $compression == TORNELIB_CRYPTO_TYPES::TYPE_GZ ) {
-				$this->setCrypto();
-				$contentString = $this->CRYPTO->base64_gzencode( $contentString );
-			} else if ( $compression == TORNELIB_CRYPTO_TYPES::TYPE_BZ2 ) {
-				$this->setCrypto();
-				$contentString = $this->CRYPTO->base64_bzencode( $contentString );
-			}
+                }
+            }
 
-			if ( $renderAndDie ) {
-				if ( $compression == TORNELIB_CRYPTO_TYPES::TYPE_GZ ) {
-					$contentString = array( 'gz' => $contentString );
-				} else if ( $compression == TORNELIB_CRYPTO_TYPES::TYPE_BZ2 ) {
-					$contentString = array( 'bz2' => $contentString );
-				}
-			}
+            return $newArray;
+        }
 
-			return $contentString;
-		}
+        /**
+         * @param array $arrayData
+         *
+         * @return bool
+         * @since 6.0.2
+         */
+        function isAssoc(array $arrayData)
+        {
+            if (array() === $arrayData) {
+                return false;
+            }
 
-		/**
-		 * ServerRenderer: Render JSON data
-		 *
-		 * @param array $contentData
-		 * @param bool $renderAndDie
-		 * @param int $compression
-		 *
-		 * @return string
-		 * @since 6.0.1
-		 */
-		public function renderJson( $contentData = array(), $renderAndDie = false, $compression = TORNELIB_CRYPTO_TYPES::TYPE_NONE ) {
-			$objectArrayEncoded = $this->getUtf8( $this->objectsIntoArray( $contentData ) );
-			$contentRendered    = $this->compressString( json_encode( $objectArrayEncoded, JSON_PRETTY_PRINT ), $compression, $renderAndDie );
+            return array_keys($arrayData) !== range(0, count($arrayData) - 1);
+        }
 
-			if ( $renderAndDie ) {
-				header( "Content-type: application/json; charset=utf-8" );
-				echo $contentRendered;
-				die;
-			}
+        /**
+         * @param string $contentString
+         * @param int $compression
+         * @param bool $renderAndDie
+         *
+         * @return string
+         * @since 6.0.3
+         */
+        private function compressString($contentString = '', $compression = TORNELIB_CRYPTO_TYPES::TYPE_NONE, $renderAndDie = false)
+        {
+            if ($compression == TORNELIB_CRYPTO_TYPES::TYPE_GZ) {
+                $this->setCrypto();
+                $contentString = $this->CRYPTO->base64_gzencode($contentString);
+            } else if ($compression == TORNELIB_CRYPTO_TYPES::TYPE_BZ2) {
+                $this->setCrypto();
+                $contentString = $this->CRYPTO->base64_bzencode($contentString);
+            }
 
-			return $contentRendered;
-		}
+            if ($renderAndDie) {
+                if ($compression == TORNELIB_CRYPTO_TYPES::TYPE_GZ) {
+                    $contentString = array('gz' => $contentString);
+                } else if ($compression == TORNELIB_CRYPTO_TYPES::TYPE_BZ2) {
+                    $contentString = array('bz2' => $contentString);
+                }
+            }
 
-		/**
-		 * ServerRenderer: PHP serialized
-		 *
-		 * @param array $contentData
-		 * @param bool $renderAndDie
-		 * @param int $compression
-		 *
-		 * @return string
-		 * @since 6.0.1
-		 */
-		public function renderPhpSerialize( $contentData = array(), $renderAndDie = false, $compression = TORNELIB_CRYPTO_TYPES::TYPE_NONE ) {
-			$contentRendered = $this->compressString( serialize( $contentData ), $compression, $renderAndDie );
+            return $contentString;
+        }
 
-			if ( $renderAndDie ) {
-				header( "Content-Type: text/plain" );
-				echo $contentRendered;
-				die;
-			}
+        /**
+         * ServerRenderer: Render JSON data
+         *
+         * @param array $contentData
+         * @param bool $renderAndDie
+         * @param int $compression
+         *
+         * @return string
+         * @since 6.0.1
+         */
+        public function renderJson($contentData = array(), $renderAndDie = false, $compression = TORNELIB_CRYPTO_TYPES::TYPE_NONE)
+        {
+            $objectArrayEncoded = $this->getUtf8($this->objectsIntoArray($contentData));
+            $contentRendered = $this->compressString(json_encode($objectArrayEncoded, JSON_PRETTY_PRINT), $compression, $renderAndDie);
 
-			return $contentRendered;
-		}
+            if ($renderAndDie) {
+                header("Content-type: application/json; charset=utf-8");
+                echo $contentRendered;
+                die;
+            }
 
-		/**
-		 * ServerRenderer: Render yaml data
-		 *
-		 * Install:
-		 *  apt-get install libyaml-dev
-		 *  pecl install yaml
-		 *
-		 * @param array $contentData
-		 * @param bool $renderAndDie
-		 *
-		 * @return string
-		 * @throws \Exception
-		 * @since 6.0.1
-		 */
-		public function renderYaml( $contentData = array(), $renderAndDie = false, $compression = TORNELIB_CRYPTO_TYPES::TYPE_NONE ) {
-			$objectArrayEncoded = $this->getUtf8( $this->objectsIntoArray( $contentData ) );
-			if ( function_exists( 'yaml_emit' ) ) {
-				$contentRendered = $this->compressString( yaml_emit( $objectArrayEncoded ), $compression, $renderAndDie );
-				if ( $renderAndDie ) {
-					header( "Content-Type: text/plain" );
-					echo $contentRendered;
-					die;
-				}
+            return $contentRendered;
+        }
 
-				return $contentRendered;
-			} else {
-				throw new \Exception( "yaml_emit not supported - ask your admin to install the driver", 404 );
-			}
-		}
+        /**
+         * ServerRenderer: PHP serialized
+         *
+         * @param array $contentData
+         * @param bool $renderAndDie
+         * @param int $compression
+         *
+         * @return string
+         * @since 6.0.1
+         */
+        public function renderPhpSerialize($contentData = array(), $renderAndDie = false, $compression = TORNELIB_CRYPTO_TYPES::TYPE_NONE)
+        {
+            $contentRendered = $this->compressString(serialize($contentData), $compression, $renderAndDie);
 
-		/**
-		 * @param bool $enforceSimpleXml
-		 */
-		public function setXmlSimple($enforceSimpleXml = true) {
-			$this->ENFORCE_SIMPLEXML = $enforceSimpleXml;
-		}
+            if ($renderAndDie) {
+                header("Content-Type: text/plain");
+                echo $contentRendered;
+                die;
+            }
 
-		/**
-		 * @return bool
-		 */
-		public function getXmlSimple() {
-			return $this->ENFORCE_SIMPLEXML;
-		}
+            return $contentRendered;
+        }
 
-		/**
-		 * @param array $dataArray
-		 * @param SimpleXMLElement $xml
-		 *
-		 * @return mixed
-		 */
-		private function array_to_xml($dataArray = array(), $xml) {
-			foreach ($dataArray as $key => $value) {
-				$key = is_numeric($key) ? 'item' : $key;
-				if (is_array($value)) {
-					$this->array_to_xml($value, $xml->addChild($key));
-				} else {
-					$xml->addChild($key, $value);
-				}
-			}
-			return $xml;
-		}
+        /**
+         * ServerRenderer: Render yaml data
+         *
+         * Install:
+         *  apt-get install libyaml-dev
+         *  pecl install yaml
+         *
+         * @param array $contentData
+         * @param bool $renderAndDie
+         *
+         * @return string
+         * @throws \Exception
+         * @since 6.0.1
+         */
+        public function renderYaml($contentData = array(), $renderAndDie = false, $compression = TORNELIB_CRYPTO_TYPES::TYPE_NONE)
+        {
+            $objectArrayEncoded = $this->getUtf8($this->objectsIntoArray($contentData));
+            if (function_exists('yaml_emit')) {
+                $contentRendered = $this->compressString(yaml_emit($objectArrayEncoded), $compression, $renderAndDie);
+                if ($renderAndDie) {
+                    header("Content-Type: text/plain");
+                    echo $contentRendered;
+                    die;
+                }
 
-		/**
-		 * @param array $contentData
-		 * @param bool $renderAndDie
-		 * @param int $compression
-		 *
-		 * @return mixed
-		 * @since 6.0.1
-		 */
-		public function renderXml( $contentData = array(), $renderAndDie = false, $compression = TORNELIB_CRYPTO_TYPES::TYPE_NONE ) {
-			$serializerPath = stream_resolve_include_path( 'XML/Serializer.php' );
-			if ( ! empty( $serializerPath ) ) {
-				require_once( 'XML/Serializer.php' );
-			}
-			$objectArrayEncoded = $this->getUtf8( $this->objectsIntoArray( $contentData ) );
-			$options            = array(
-				'indent'         => '    ',
-				'linebreak'      => "\n",
-				'encoding'       => 'UTF-8',
-				'rootName'       => 'TorneAPIXMLResponse',
-				'defaultTagName' => 'item'
-			);
-			if ( class_exists( 'XML_Serializer' ) && !$this->ENFORCE_SIMPLEXML ) {
-				$xmlSerializer = new \XML_Serializer( $options );
-				$xmlSerializer->serialize( $objectArrayEncoded );
-				$contentRendered = $xmlSerializer->getSerializedData();
-			} else {
-				$xml = new \SimpleXMLElement( '<?xml version="1.0"?><data></data>' );
-				$this->array_to_xml( $objectArrayEncoded, $xml );
-				$contentRendered = $xml->asXML();
-			}
+                return $contentRendered;
+            } else {
+                throw new \Exception("yaml_emit not supported - ask your admin to install the driver", 404);
+            }
+        }
 
-			$contentRendered = $this->compressString( $contentRendered, $compression, $renderAndDie );
+        /**
+         * @param array $contentData
+         * @param bool $renderAndDie
+         * @param int $compression
+         *
+         * @return mixed
+         * @since 6.0.1
+         */
+        public function renderXml($contentData = array(), $renderAndDie = false, $compression = TORNELIB_CRYPTO_TYPES::TYPE_NONE)
+        {
+            $serializerPath = stream_resolve_include_path('XML/Serializer.php');
+            if (!empty($serializerPath)) {
+                require_once('XML/Serializer.php');
+            }
+            $objectArrayEncoded = $this->getUtf8($this->objectsIntoArray($contentData));
+            $options = array(
+                'indent' => '    ',
+                'linebreak' => "\n",
+                'encoding' => 'UTF-8',
+                'rootName' => 'TorneAPIXMLResponse',
+                'defaultTagName' => 'item'
+            );
+            if (class_exists('XML_Serializer') && !$this->ENFORCE_SIMPLEXML) {
+                $xmlSerializer = new \XML_Serializer($options);
+                $xmlSerializer->serialize($objectArrayEncoded);
+                $contentRendered = $xmlSerializer->getSerializedData();
+            } else {
+                $xml = new \SimpleXMLElement('<?xml version="1.0"?><data></data>');
+                $this->array_to_xml($objectArrayEncoded, $xml);
+                $contentRendered = $xml->asXML();
+            }
 
-			if ( $renderAndDie ) {
-				header( "Content-Type: application/xml" );
-				echo $contentRendered;
-				die;
-			}
+            $contentRendered = $this->compressString($contentRendered, $compression, $renderAndDie);
 
-			return $contentRendered;
-		}
+            if ($renderAndDie) {
+                header("Content-Type: application/xml");
+                echo $contentRendered;
+                die;
+            }
 
-	}
+            return $contentRendered;
+        }
+
+    }
 }

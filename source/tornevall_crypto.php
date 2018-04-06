@@ -16,7 +16,7 @@
  * limitations under the License.
  *
  * @package TorneLIB
- * @version 6.0.6
+ * @version 6.0.7
  *
  * Crypto-IO Library. Anything that changes in those folders, will render version increase.
  */
@@ -43,7 +43,9 @@ if ( ! class_exists( 'TorneLIB_Crypto' ) && ! class_exists( 'TorneLIB\TorneLIB_C
 
 		/**
 		 * Set and override compression level
+         *
 		 * @param int $compressionLevel
+         * @since 6.0.6
 		 */
 		function setCompressionLevel($compressionLevel = 9) {
 			$this->compressionLevel = $compressionLevel;
@@ -51,7 +53,9 @@ if ( ! class_exists( 'TorneLIB_Crypto' ) && ! class_exists( 'TorneLIB\TorneLIB_C
 
 		/**
 		 * Get current compressionlevel
+         *
 		 * @return mixed
+         * @since 6.0.6
 		 */
 		public function getCompressionLevel() {
 			return $this->compressionLevel;
@@ -265,9 +269,23 @@ if ( ! class_exists( 'TorneLIB_Crypto' ) && ! class_exists( 'TorneLIB\TorneLIB_C
 		}
 
 		/**
+		 * @param int $complexity
+		 * @param int $totalLength
+		 * @param bool $ambigous
+		 *
+		 * @return string
+		 * @since 6.0.7
+		 */
+		public static function getRandomSalt( $complexity = 4, $totalLength = 16, $ambigous = false ) {
+			$selfInstance = new TorneLIB_Crypto();
+			return $selfInstance->mkpass($complexity, $totalLength, $ambigous);
+		}
+
+		/**
 		 * Set up key for aes encryption.
 		 *
 		 * @param $useKey
+         * @since 6.0.0
 		 */
 		public function setAesKey( $useKey ) {
 			$this->aesKey = md5( $useKey );
@@ -277,6 +295,7 @@ if ( ! class_exists( 'TorneLIB_Crypto' ) && ! class_exists( 'TorneLIB\TorneLIB_C
 		 * Set up ip for aes encryption
 		 *
 		 * @param $useIv
+         * @since 6.0.0
 		 */
 		public function setAesIv( $useIv ) {
 			$this->aesIv = md5( $useIv );
@@ -290,6 +309,7 @@ if ( ! class_exists( 'TorneLIB_Crypto' ) && ! class_exists( 'TorneLIB\TorneLIB_C
 		 *
 		 * @return string
 		 * @throws \Exception
+         * @since 6.0.0
 		 */
 		public function aesEncrypt( $decryptedContent = "", $asBase64 = true ) {
 			$useKey      = $this->aesKey;
@@ -319,6 +339,7 @@ if ( ! class_exists( 'TorneLIB_Crypto' ) && ! class_exists( 'TorneLIB\TorneLIB_C
 		 *
 		 * @return string
 		 * @throws \Exception
+         * @since 6.0.0
 		 */
 		public function aesDecrypt( $encryptedContent = "", $asBase64 = true ) {
 			$useKey = $this->aesKey;
@@ -343,6 +364,7 @@ if ( ! class_exists( 'TorneLIB_Crypto' ) && ! class_exists( 'TorneLIB\TorneLIB_C
 		 *
 		 * @return string
 		 * @throws \Exception
+         * @since 6.0.0
 		 */
 		public function base64_gzencode( $data = '', $compressionLevel = - 1 ) {
 
@@ -364,6 +386,7 @@ if ( ! class_exists( 'TorneLIB_Crypto' ) && ! class_exists( 'TorneLIB\TorneLIB_C
 		 * @param string $data
 		 *
 		 * @return string
+         * @since 6.0.0
 		 */
 		public function base64_gzdecode( $data = '' ) {
 			$gzDecoded = $this->base64url_decode( $data );
@@ -378,6 +401,7 @@ if ( ! class_exists( 'TorneLIB_Crypto' ) && ! class_exists( 'TorneLIB\TorneLIB_C
 		 *
 		 * @return string
 		 * @throws \Exception
+         * @since 6.0.0
 		 */
 		public function base64_bzencode( $data = '' ) {
 			if ( ! function_exists( 'bzcompress' ) ) {
@@ -395,6 +419,7 @@ if ( ! class_exists( 'TorneLIB_Crypto' ) && ! class_exists( 'TorneLIB\TorneLIB_C
 		 *
 		 * @return mixed
 		 * @throws \Exception
+         * @since 6.0.0
 		 */
 		public function base64_bzdecode( $data ) {
 			if ( ! function_exists( 'bzdecompress' ) ) {
@@ -411,6 +436,7 @@ if ( ! class_exists( 'TorneLIB_Crypto' ) && ! class_exists( 'TorneLIB\TorneLIB_C
 		 * @param string $data
 		 *
 		 * @return mixed
+         * @since 6.0.0
 		 */
 
 		public function base64_compress( $data = '' ) {
@@ -443,6 +469,7 @@ if ( ! class_exists( 'TorneLIB_Crypto' ) && ! class_exists( 'TorneLIB\TorneLIB_C
 		 * @param bool $getCompressionType
 		 *
 		 * @return string
+         * @since 6.0.0
 		 */
 		public function base64_decompress( $data = '', $getCompressionType = false ) {
 			$results       = array();
@@ -481,6 +508,7 @@ if ( ! class_exists( 'TorneLIB_Crypto' ) && ! class_exists( 'TorneLIB\TorneLIB_C
 		 *
 		 * @return string
 		 * @throws \Exception
+         * @since 6.0.0
 		 */
 		private function gzDecode( $data ) {
 			if ( function_exists( 'gzdecode' ) ) {
@@ -525,6 +553,7 @@ if ( ! class_exists( 'TorneLIB_Crypto' ) && ! class_exists( 'TorneLIB\TorneLIB_C
 		 * @param $data
 		 *
 		 * @return string
+         * @since 6.0.0
 		 */
 		public function base64url_encode( $data ) {
 			return rtrim( strtr( base64_encode( $data ), '+/', '-_' ), '=' );
@@ -536,6 +565,7 @@ if ( ! class_exists( 'TorneLIB_Crypto' ) && ! class_exists( 'TorneLIB\TorneLIB_C
 		 * @param $data
 		 *
 		 * @return string
+         * @since 6.0.0
 		 */
 		public function base64url_decode( $data ) {
 			return base64_decode( str_pad( strtr( $data, '-_', '+/' ), strlen( $data ) % 4, '=', STR_PAD_RIGHT ) );
