@@ -186,10 +186,14 @@ class ioTest extends TestCase {
 	 * @throws Exception
 	 */
 	function getFromYaml() {
-		$yaml       = $this->IO->renderYaml( $this->arr );
-		$yamlArray  = $this->IO->getFromYaml( $yaml );
-		$yamlObject = $this->IO->getFromYaml( $yaml, false );
-		static::assertTrue( is_array( $yamlArray ) && is_object( $yamlObject ) && isset( $yamlArray['a'] ) && isset( $yamlObject->a ) );
+		if ( function_exists( 'yaml_parse' ) ) {
+			$yaml       = $this->IO->renderYaml( $this->arr );
+			$yamlArray  = $this->IO->getFromYaml( $yaml );
+			$yamlObject = $this->IO->getFromYaml( $yaml, false );
+			static::assertTrue( is_array( $yamlArray ) && is_object( $yamlObject ) && isset( $yamlArray['a'] ) && isset( $yamlObject->a ) );
+		} else {
+			static::markTestSkipped("Yaml parser is not installed at this platform");
+		}
 	}
 
 	/**
