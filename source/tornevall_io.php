@@ -490,11 +490,11 @@ if ( ! class_exists( 'TorneLIB_IO' ) && ! class_exists( 'TorneLIB\TorneLIB_IO' )
 		 * @return mixed
 		 * @since 6.0.5
 		 */
-		public function getFromSerializerInternal($serialInput = '', $assoc = false) {
-			if (!$assoc) {
+		public function getFromSerializerInternal( $serialInput = '', $assoc = false ) {
+			if ( ! $assoc ) {
 				return @unserialize( $serialInput );
 			} else {
-				return $this->arrayObjectToStdClass(@unserialize( $serialInput ));
+				return $this->arrayObjectToStdClass( @unserialize( $serialInput ) );
 			}
 		}
 
@@ -581,9 +581,9 @@ if ( ! class_exists( 'TorneLIB_IO' ) && ! class_exists( 'TorneLIB\TorneLIB_IO' )
 			if ( is_string( $dataIn ) ) {
 				return @json_decode( $dataIn );
 			} else if ( is_object( $dataIn ) ) {
-				return @json_encode( $this->objectsIntoArray( $dataIn ) );
+				return null;
 			} else if ( is_array( $dataIn ) ) {
-				return @json_encode( $dataIn );
+				return null;
 			}
 		}
 
@@ -598,32 +598,37 @@ if ( ! class_exists( 'TorneLIB_IO' ) && ! class_exists( 'TorneLIB\TorneLIB_IO' )
 		 */
 		public function getFromXml( $dataIn = '', $normalize = false ) {
 			if ( $this->getXmlUnSerializer() && $this->getHasXmlSerializer() ) {
-				require_once( 'XML/Unserializer.php' );
-				$xmlSerializer = new \XML_Unserializer();
-				$xmlSerializer->unserialize( $dataIn );
+				if ( is_string( $dataIn ) ) {
+					require_once( 'XML/Unserializer.php' );
+					$xmlSerializer = new \XML_Unserializer();
+					$xmlSerializer->unserialize( $dataIn );
 
-				if ( ! $normalize ) {
-					return $xmlSerializer->getUnserializedData();
-				} else {
-					return $this->arrayObjectToStdClass( $xmlSerializer->getUnserializedData() );
+					if ( ! $normalize ) {
+						return $xmlSerializer->getUnserializedData();
+					} else {
+						return $this->arrayObjectToStdClass( $xmlSerializer->getUnserializedData() );
+					}
 				}
-
 			} else {
 				if ( class_exists( 'SimpleXMLElement' ) ) {
-					if ( $this->ENFORCE_CDATA ) {
-						$simpleXML = new \SimpleXMLElement( $dataIn, LIBXML_NOCDATA );
-					} else {
-						$simpleXML = new \SimpleXMLElement( $dataIn );
-					}
-					if ( isset( $simpleXML ) && ( is_object( $simpleXML ) || is_array( $simpleXML ) ) ) {
-						if ( ! $normalize ) {
-							return $simpleXML;
+					if ( is_string( $dataIn ) ) {
+						if ( $this->ENFORCE_CDATA ) {
+							$simpleXML = new \SimpleXMLElement( $dataIn, LIBXML_NOCDATA );
 						} else {
-							return $this->arrayObjectToStdClass( $simpleXML );
+							$simpleXML = new \SimpleXMLElement( $dataIn );
+						}
+						if ( isset( $simpleXML ) && ( is_object( $simpleXML ) || is_array( $simpleXML ) ) ) {
+							if ( ! $normalize ) {
+								return $simpleXML;
+							} else {
+								return $this->arrayObjectToStdClass( $simpleXML );
+							}
 						}
 					}
 				}
 			}
+
+			return null;
 		}
 
 		/**
@@ -634,13 +639,13 @@ if ( ! class_exists( 'TorneLIB_IO' ) && ! class_exists( 'TorneLIB\TorneLIB_IO' )
 		 * @throws \Exception
 		 * @since 6.0.5
 		 */
-		public function getFromYaml($yamlString = '', $getAssoc = true) {
-			if (function_exists('yaml_parse')) {
-				$extractYaml = yaml_parse($yamlString);
-				if ($getAssoc) {
+		public function getFromYaml( $yamlString = '', $getAssoc = true ) {
+			if ( function_exists( 'yaml_parse' ) ) {
+				$extractYaml = yaml_parse( $yamlString );
+				if ( $getAssoc ) {
 					return $extractYaml;
 				} else {
-					return $this->arrayObjectToStdClass($extractYaml);
+					return $this->arrayObjectToStdClass( $extractYaml );
 				}
 			} else {
 				throw new \Exception( "yaml_parse not supported - ask your admin to install the driver", 404 );

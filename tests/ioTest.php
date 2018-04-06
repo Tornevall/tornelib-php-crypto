@@ -143,6 +143,14 @@ class ioTest extends TestCase {
 
 	/**
 	 * @test
+	 */
+	function getFromJsonBadType() {
+		$thitIsNotJsonString = $this->IO->getFromJson( $this->arr );
+		static::assertTrue( is_null( $thitIsNotJsonString ) );
+	}
+
+	/**
+	 * @test
 	 * @throws Exception
 	 */
 	function getReverseJsonFromRender() {
