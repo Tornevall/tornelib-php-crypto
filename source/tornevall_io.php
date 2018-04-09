@@ -16,7 +16,7 @@
  * limitations under the License.
  *
  * @package TorneLIB
- * @version 6.0.5
+ * @version 6.0.6
  */
 
 namespace TorneLIB;
@@ -35,137 +35,9 @@ if ( ! class_exists( 'TorneLIB_IO' ) && ! class_exists( 'TorneLIB\TorneLIB_IO' )
 		/** @var bool $ENFORCE_CDATA */
 		private $ENFORCE_CDATA = false;
 
-		/** @var array 7 bit encoding table */
-		private $BIT7TABLE = array(
-			'@',
-			'£',
-			'$',
-			'¥',
-			'è',
-			'é',
-			'ù',
-			'ì',
-			'ò',
-			'Ç',
-			'\n',
-			'Ø',
-			'ø',
-			'\r',
-			'Å',
-			'å',
-			'\u0394',
-			'_',
-			'\u03a6',
-			'\u0393',
-			'\u039b',
-			'\u03a9',
-			'\u03a0',
-			'\u03a8',
-			'\u03a3',
-			'\u0398',
-			'\u039e',
-			'.',
-			'Æ',
-			'æ',
-			'ß',
-			'É',
-			' ',
-			'!',
-			'"',
-			'#',
-			'¤',
-			'%',
-			'&',
-			'\'',
-			'(',
-			')',
-			'*',
-			'+',
-			',',
-			'-',
-			'.',
-			'/',
-			'0',
-			'1',
-			'2',
-			'3',
-			'4',
-			'5',
-			'6',
-			'7',
-			'8',
-			'9',
-			':',
-			';',
-			'<',
-			'=',
-			'>',
-			'?',
-			'¡',
-			'A',
-			'B',
-			'C',
-			'D',
-			'E',
-			'F',
-			'G',
-			'H',
-			'I',
-			'J',
-			'K',
-			'L',
-			'M',
-			'N',
-			'O',
-			'P',
-			'Q',
-			'R',
-			'S',
-			'T',
-			'U',
-			'V',
-			'W',
-			'X',
-			'Y',
-			'Z',
-			'Ä',
-			'Ö',
-			'Ñ',
-			'Ü',
-			'§',
-			'¿',
-			'a',
-			'b',
-			'c',
-			'd',
-			'e',
-			'f',
-			'g',
-			'h',
-			'i',
-			'j',
-			'k',
-			'l',
-			'm',
-			'n',
-			'o',
-			'p',
-			'q',
-			'r',
-			's',
-			't',
-			'u',
-			'v',
-			'w',
-			'x',
-			'y',
-			'z',
-			'ä',
-			'ö',
-			'ñ',
-			'ü',
-			'à'
-		);
+		/** @var bool $SOAP_ATTRIBUTES_ENABLED */
+		private $SOAP_ATTRIBUTES_ENABLED = false;
+
 
 		public function __construct() {
 		}
@@ -275,6 +147,24 @@ if ( ! class_exists( 'TorneLIB_IO' ) && ! class_exists( 'TorneLIB\TorneLIB_IO' )
 			}
 
 			return false;
+		}
+
+		/**
+		 * @param bool $soapAttributes
+		 *
+		 * @since 6.0.6
+		 */
+		public function setSoapXml( $soapAttributes = true ) {
+			$this->SOAP_ATTRIBUTES_ENABLED = $soapAttributes;
+			$this->setXmlSimple( true );
+		}
+
+		/**
+		 * @return bool
+		 * @since 6.0.6
+		 */
+		public function getSoapXml() {
+			return $this->SOAP_ATTRIBUTES_ENABLED;
 		}
 
 		/**
@@ -537,7 +427,7 @@ if ( ! class_exists( 'TorneLIB_IO' ) && ! class_exists( 'TorneLIB\TorneLIB_IO' )
 		 * @throws \Exception
 		 * @since 6.0.1
 		 */
-		public function renderXml( $contentData = array(), $renderAndDie = false, $compression = TORNELIB_CRYPTO_TYPES::TYPE_NONE ) {
+		public function renderXml( $contentData = array(), $renderAndDie = false, $compression = TORNELIB_CRYPTO_TYPES::TYPE_NONE, $initialTagName = 'item', $rootName = 'XMLResponse' ) {
 			$serializerPath = stream_resolve_include_path( 'XML/Serializer.php' );
 			if ( ! empty( $serializerPath ) ) {
 				require_once( 'XML/Serializer.php' );
@@ -547,15 +437,24 @@ if ( ! class_exists( 'TorneLIB_IO' ) && ! class_exists( 'TorneLIB\TorneLIB_IO' )
 				'indent'         => '    ',
 				'linebreak'      => "\n",
 				'encoding'       => 'UTF-8',
-				'rootName'       => 'TorneAPIXMLResponse',
-				'defaultTagName' => 'item'
+				'rootName'       => $rootName,
+				'defaultTagName' => $initialTagName
 			);
 			if ( class_exists( 'XML_Serializer' ) && ! $this->ENFORCE_SIMPLEXML ) {
 				$xmlSerializer = new \XML_Serializer( $options );
 				$xmlSerializer->serialize( $objectArrayEncoded );
 				$contentRendered = $xmlSerializer->getSerializedData();
 			} else {
-				$xml = new \SimpleXMLElement( '<?xml version="1.0"?><data></data>' );
+				// <data></data>
+				if ( $this->SOAP_ATTRIBUTES_ENABLED ) {
+					$soapNs = 'http://schemas.xmlsoap.org/soap/envelope/';
+					$xml    = new \SimpleXMLElement( '<?xml version="1.0"?>' . '<' . $rootName . '></' . $rootName . '>', 0, false, $soapNs, false );
+					$xml->addAttribute( $rootName . ':xmlns', $soapNs );
+					$xml->addAttribute( $rootName . ':xsi', 'http://www.w3.org/2001/XMLSchema-instance' );
+					$xml->addAttribute( $rootName . ':xsd', 'http://www.w3.org/2001/XMLSchema' );
+				} else {
+					$xml = new \SimpleXMLElement( '<?xml version="1.0"?>' . '<' . $rootName . '></' . $rootName . '>' );
+				}
 				$this->array_to_xml( $objectArrayEncoded, $xml );
 				$contentRendered = $xml->asXML();
 			}

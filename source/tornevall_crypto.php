@@ -16,7 +16,7 @@
  * limitations under the License.
  *
  * @package TorneLIB
- * @version 6.0.7
+ * @version 6.0.8
  *
  * Crypto-IO Library. Anything that changes in those folders, will render version increase.
  */
