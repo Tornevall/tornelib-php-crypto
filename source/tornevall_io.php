@@ -560,7 +560,7 @@ if ( ! class_exists( 'MODULE_IO' ) && ! class_exists( 'TorneLIB\MODULE_IO' ) && 
 		 */
 		public function getFromYaml( $yamlString = '', $getAssoc = true ) {
 			if ( function_exists( 'yaml_parse' ) ) {
-				$extractYaml = yaml_parse( $yamlString );
+				$extractYaml = @yaml_parse( $yamlString );
 				if ( $getAssoc ) {
 					return $extractYaml;
 				} else {
