@@ -1,6 +1,6 @@
 <?php
 
-use TorneLIB\TorneLIB_IO;
+use TorneLIB\MODULE_IO;
 use TorneLIB\TorneLIB_PDU_Encoder;
 use TorneLIB\TORNELIB_CRYPTO_TYPES;
 use PHPUnit\Framework\TestCase;
@@ -11,11 +11,10 @@ if ( file_exists( __DIR__ . '/../vendor/autoload.php' ) ) {
 
 class ioTest extends TestCase {
 
-	/** @var TorneLIB_IO $IO */
+	/** @var \TorneLIB\MODULE_CRYPTO $IO */
 	private $IO;
-	/** @var TorneLIB_PDU_Encoder $PDU */
-	private $PDU;
 
+	/** @var string $BIT_STRING */
 	private $BIT_STRING = "This is a swedish test containing räksmörgåsar! (With smörgårsbord)";
 
 	private $arr = array(
@@ -28,7 +27,7 @@ class ioTest extends TestCase {
 	private $obj;
 
 	function setUp() {
-		$this->IO = new TorneLIB_IO();
+		$this->IO = new MODULE_IO();
 		//$this->PDU = new \TorneLIB\TorneLIB_PDU_Encoder();
 		$this->obj               = new stdClass();
 		$this->obj->a            = new stdClass();

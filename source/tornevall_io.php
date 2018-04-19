@@ -16,13 +16,33 @@
  * limitations under the License.
  *
  * @package TorneLIB
- * @version 6.0.6
+ * @version 6.0.7
  */
 
 namespace TorneLIB;
 
-if ( ! class_exists( 'TorneLIB_IO' ) && ! class_exists( 'TorneLIB\TorneLIB_IO' ) ) {
-	class TorneLIB_IO {
+if ( ! defined( 'TORNELIB_IO_RELEASE' ) ) {
+	define( 'TORNELIB_IO_RELEASE', '6.0.19' );
+}
+if ( ! defined( 'TORNELIB_IO_MODIFY' ) ) {
+	define( 'TORNELIB_IO_MODIFY', '20180419' );
+}
+if ( ! defined( 'TORNELIB_IO_CLIENTNAME' ) ) {
+	define( 'TORNELIB_IO_CLIENTNAME', 'MODULE_CRYPTO' );
+}
+
+if ( defined( 'TORNELIB_IO_REQUIRE' ) ) {
+	if ( ! defined( 'TORNELIB_IO_REQUIRE_OPERATOR' ) ) {
+		define( 'TORNELIB_IO_REQUIRE_OPERATOR', '==' );
+	}
+	define( 'TORNELIB_IO_ALLOW_AUTOLOAD', version_compare( TORNELIB_IO_RELEASE, TORNELIB_IO_REQUIRE, TORNELIB_IO_REQUIRE_OPERATOR ) ? true : false );
+} else {
+	define( 'TORNELIB_IO_ALLOW_AUTOLOAD', true );
+}
+
+if ( ! class_exists( 'MODULE_IO' ) && ! class_exists( 'TorneLIB\MODULE_IO' ) && defined( 'TORNELIB_IO_ALLOW_AUTOLOAD' ) && TORNELIB_IO_ALLOW_AUTOLOAD === true ) {
+
+	class MODULE_IO {
 
 		/** @var TorneLIB_Crypto $CRYPTO */
 		private $CRYPTO;
@@ -551,5 +571,10 @@ if ( ! class_exists( 'TorneLIB_IO' ) && ! class_exists( 'TorneLIB\TorneLIB_IO' )
 			}
 		}
 
+	}
+}
+
+if ( ! class_exists( 'TorneLIB_IO' ) && ! class_exists( 'TorneLIB\TorneLIB_IO' ) ) {
+	class TorneLIB_IO extends MODULE_IO {
 	}
 }

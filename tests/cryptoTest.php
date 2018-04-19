@@ -1,6 +1,6 @@
 <?php
 
-use TorneLIB\TorneLIB_Crypto;
+use TorneLIB\MODULE_CRYPTO;
 use PHPUnit\Framework\TestCase;
 
 if ( file_exists( __DIR__ . '/../vendor/autoload.php' ) ) {
@@ -9,7 +9,7 @@ if ( file_exists( __DIR__ . '/../vendor/autoload.php' ) ) {
 
 class cryptoTest extends TestCase {
 
-	/** @var $Crypto TorneLIB_Crypto */
+	/** @var $Crypto MODULE_CRYPTO */
 	private $Crypto;
 
 	// Compressed strings setup over base64
@@ -23,7 +23,7 @@ class cryptoTest extends TestCase {
 
 
 	function setUp() {
-		$this->Crypto              = new TorneLIB_Crypto();
+		$this->Crypto              = new MODULE_CRYPTO();
 	}
 
 	/**
@@ -32,7 +32,7 @@ class cryptoTest extends TestCase {
 	 */
 	function base64GzEncodeLevel0() {
 		$gzString = $this->Crypto->base64_gzencode( $this->testCompressString, 0 );
-		$this->assertTrue( $gzString == $this->gz0Base );
+		static::assertTrue( $gzString == $this->gz0Base );
 	}
 
 	/**
@@ -42,7 +42,7 @@ class cryptoTest extends TestCase {
 	function base64GzEncodeLevel9() {
 		$myString = "Testing my string";
 		$gzString = $this->Crypto->base64_gzencode( $myString, 9 );
-		$this->assertTrue( $gzString == $this->gz9Base );
+		static::assertTrue( $gzString == $this->gz9Base );
 	}
 
 	/**
@@ -50,7 +50,7 @@ class cryptoTest extends TestCase {
 	 */
 	function base64GzDecodeLevel0() {
 		$gzString = $this->Crypto->base64_gzdecode( $this->gz0Base );
-		$this->assertTrue( $gzString == $this->testCompressString );
+		static::assertTrue( $gzString == $this->testCompressString );
 	}
 
 	/**
@@ -58,7 +58,7 @@ class cryptoTest extends TestCase {
 	 */
 	function base64GzDecodeLevel9() {
 		$gzString = $this->Crypto->base64_gzdecode( $this->gz9Base );
-		$this->assertTrue( $gzString == $this->testCompressString );
+		static::assertTrue( $gzString == $this->testCompressString );
 	}
 
 	/**
@@ -68,9 +68,9 @@ class cryptoTest extends TestCase {
 	function base64BzEncode() {
 		if (function_exists('bzcompress')) {
 			$bzString = $this->Crypto->base64_bzencode( $this->testCompressString );
-			$this->assertTrue( $bzString == $this->bzBase );
+			static::assertTrue( $bzString == $this->bzBase );
 		} else {
-			$this->markTestSkipped('bzcompress is missing on this server, could not complete test');
+			static::markTestSkipped('bzcompress is missing on this server, could not complete test');
 		}
 	}
 
@@ -81,7 +81,7 @@ class cryptoTest extends TestCase {
 	function base64BzDecode() {
 		if (function_exists('bzcompress')) {
 		$bzString = $this->Crypto->base64_bzdecode( $this->bzBase );
-		$this->assertTrue( $bzString == $this->testCompressString );
+		static::assertTrue( $bzString == $this->testCompressString );
 		} else {
 			$this->markTestSkipped('bzcompress is missing on this server, could not complete test');
 		}
@@ -95,21 +95,28 @@ class cryptoTest extends TestCase {
 		$uncompressedString                = $this->Crypto->base64_decompress( $compressedString );
 		$uncompressedStringCompressionType = $this->Crypto->base64_decompress( $compressedString, true );
 		// In this case the compression type has really nothing to do with the test. We just know that gz9 is the best type for our chosen data string.
-		$this->assertTrue( $uncompressedString == $this->testLongCompressString && $uncompressedStringCompressionType == "gz9" );
+		static::assertTrue( $uncompressedString == $this->testLongCompressString && $uncompressedStringCompressionType == "gz9" );
 	}
 
 	/**
 	 * @test
 	 */
 	function mkPass() {
-		$this->assertTrue(strlen($this->Crypto->mkpass(1, 16)) == 16);
+		static::assertTrue(strlen($this->Crypto->mkpass(1, 16)) == 16);
 	}
 
 	/**
 	 * @test
 	 */
 	function randomSaltStaticMkPass() {
-		$this->assertTrue(strlen(TorneLIB_Crypto::getRandomSalt(1, 16)) == 16);
+		static::assertTrue(strlen(MODULE_CRYPTO::getRandomSalt(1, 16)) == 16);
+	}
+
+	/**
+	 * @test
+	 */
+	function randomSaltStaticMkPassBackwardCompat() {
+		static::assertTrue(strlen(\TorneLIB\TorneLIB_Crypto::getRandomSalt(1, 16)) == 16);
 	}
 
 }

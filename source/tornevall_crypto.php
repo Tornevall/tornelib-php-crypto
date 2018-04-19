@@ -16,18 +16,38 @@
  * limitations under the License.
  *
  * @package TorneLIB
- * @version 6.0.8
+ * @version 6.0.9
  *
  * Crypto-IO Library. Anything that changes in those folders, will render version increase.
  */
 
 namespace TorneLIB;
 
-if ( ! class_exists( 'TorneLIB_Crypto' ) && ! class_exists( 'TorneLIB\TorneLIB_Crypto' ) ) {
+if ( ! defined( 'TORNELIB_CRYPTO_RELEASE' ) ) {
+	define( 'TORNELIB_CRYPTO_RELEASE', '6.0.19' );
+}
+if ( ! defined( 'TORNELIB_CRYPTO_MODIFY' ) ) {
+	define( 'TORNELIB_CRYPTO_MODIFY', '20180419' );
+}
+if ( ! defined( 'TORNELIB_CRYPTO_CLIENTNAME' ) ) {
+	define( 'TORNELIB_CRYPTO_CLIENTNAME', 'MODULE_CRYPTO' );
+}
+
+if ( defined( 'TORNELIB_CRYPTO_REQUIRE' ) ) {
+	if ( ! defined( 'TORNELIB_CRYPTO_REQUIRE_OPERATOR' ) ) {
+		define( 'TORNELIB_CRYPTO_REQUIRE_OPERATOR', '==' );
+	}
+	define( 'TORNELIB_CRYPTO_ALLOW_AUTOLOAD', version_compare( TORNELIB_CRYPTO_RELEASE, TORNELIB_CRYPTO_REQUIRE, TORNELIB_CRYPTO_REQUIRE_OPERATOR ) ? true : false );
+} else {
+	define( 'TORNELIB_CRYPTO_ALLOW_AUTOLOAD', true );
+}
+
+if ( ! class_exists( 'MODULE_CRYPTO' ) && ! class_exists( 'TorneLIB\MODULE_CRYPTO' ) && defined( 'TORNELIB_CRYPTO_ALLOW_AUTOLOAD' ) && TORNELIB_CRYPTO_ALLOW_AUTOLOAD === true ) {
+
 	/**
 	 * Class TorneLIB_Crypto
 	 */
-	class TorneLIB_Crypto {
+	class MODULE_CRYPTO {
 
 		private $aesKey = "";
 		private $aesIv = "";
@@ -390,6 +410,7 @@ if ( ! class_exists( 'TorneLIB_Crypto' ) && ! class_exists( 'TorneLIB\TorneLIB_C
 		 * @param string $data
 		 *
 		 * @return string
+		 * @throws \Exception
 		 * @since 6.0.0
 		 */
 		public function base64_gzdecode( $data = '' ) {
@@ -440,6 +461,7 @@ if ( ! class_exists( 'TorneLIB_Crypto' ) && ! class_exists( 'TorneLIB\TorneLIB_C
 		 * @param string $data
 		 *
 		 * @return mixed
+		 * @throws \Exception
 		 * @since 6.0.0
 		 */
 
@@ -473,6 +495,7 @@ if ( ! class_exists( 'TorneLIB_Crypto' ) && ! class_exists( 'TorneLIB\TorneLIB_C
 		 * @param bool $getCompressionType
 		 *
 		 * @return string
+		 * @throws \Exception
 		 * @since 6.0.0
 		 */
 		public function base64_decompress( $data = '', $getCompressionType = false ) {
@@ -582,5 +605,10 @@ if ( ! class_exists( 'TORNELIB_CRYPTO_CRYPTOTYPES' ) && ! class_exists( 'TorneLI
 		const TYPE_NONE = 0;
 		const TYPE_GZ = 1;
 		const TYPE_BZ2 = 2;
+	}
+}
+
+if ( ! class_exists( 'TorneLIB_Crypto' ) && ! class_exists( 'TorneLIB\TorneLIB_Crypto' ) ) {
+	class TorneLIB_Crypto extends MODULE_CRYPTO {
 	}
 }
