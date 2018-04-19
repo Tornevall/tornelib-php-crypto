@@ -24,7 +24,7 @@
 namespace TorneLIB;
 
 if ( ! defined( 'TORNELIB_CRYPTO_RELEASE' ) ) {
-	define( 'TORNELIB_CRYPTO_RELEASE', '6.0.19' );
+	define( 'TORNELIB_CRYPTO_RELEASE', '6.0.9' );
 }
 if ( ! defined( 'TORNELIB_CRYPTO_MODIFY' ) ) {
 	define( 'TORNELIB_CRYPTO_MODIFY', '20180419' );

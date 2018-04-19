@@ -22,7 +22,7 @@
 namespace TorneLIB;
 
 if ( ! defined( 'TORNELIB_IO_RELEASE' ) ) {
-	define( 'TORNELIB_IO_RELEASE', '6.0.19' );
+	define( 'TORNELIB_IO_RELEASE', '6.0.7' );
 }
 if ( ! defined( 'TORNELIB_IO_MODIFY' ) ) {
 	define( 'TORNELIB_IO_MODIFY', '20180419' );
