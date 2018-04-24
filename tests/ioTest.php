@@ -171,6 +171,7 @@ class ioTest extends TestCase {
 		$xmlObjectString = $this->IO->renderXml( $this->obj );
 		/** @var SimpleXMLElement $xmlElement */
 		$xmlElements = $this->IO->getFromXml( $xmlObjectString, true );
+		print_R( $xmlElements );
 		static::assertTrue( isset( $xmlElements->a ) );
 	}
 
@@ -203,18 +204,20 @@ class ioTest extends TestCase {
 
 	/**
 	 * @test
+	 * @testdox As of 6.0.9, this does not throw anything anymore
 	 * @throws Exception
 	 */
 	function getFromBadYaml() {
 		if ( function_exists( 'yaml_parse' ) ) {
 			try {
-				$this->IO->getFromYaml( null );
+				$yamlResponse = $this->IO->getFromYaml( null );
 			} catch ( \Exception $e ) {
 				static::assertStringEndsWith( 'end of stream reached without finding document 0', $e->getMessage() );
 			}
 		} else {
 			static::markTestSkipped( "Yaml parser is not installed at this platform" );
 		}
+		static::assertTrue( is_null( $yamlResponse ) ? true : false );
 	}
 
 	/**

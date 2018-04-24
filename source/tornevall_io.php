@@ -549,9 +549,11 @@ if ( ! class_exists( 'MODULE_IO' ) && ! class_exists( 'TorneLIB\MODULE_IO' ) && 
 								return $simpleXML;
 							} else {
 								$objectClass      = $this->arrayObjectToStdClass( $simpleXML );
-								$xmlExtractedPath = $this->extractXmlPath( $simpleXML );
-								if ( ! is_null( $xmlExtractedPath ) && is_object( $xmlExtractedPath ) ) {
-									return $this->arrayObjectToStdClass( $xmlExtractedPath );
+								if (empty($objectClass)) {
+									$xmlExtractedPath = $this->extractXmlPath( $simpleXML );
+									if ( ! is_null( $xmlExtractedPath ) && is_object( $xmlExtractedPath ) ) {
+										return $this->arrayObjectToStdClass( $xmlExtractedPath );
+									}
 								}
 
 								return $objectClass;
@@ -613,8 +615,14 @@ if ( ! class_exists( 'MODULE_IO' ) && ! class_exists( 'TorneLIB\MODULE_IO' ) && 
 			if ( function_exists( 'yaml_parse' ) ) {
 				$extractYaml = @yaml_parse( $yamlString );
 				if ( $getAssoc ) {
+					if (empty($extractYaml)) {
+						return null;
+					}
 					return $extractYaml;
 				} else {
+					if (empty($extractYaml)) {
+						return null;
+					}
 					return $this->arrayObjectToStdClass( $extractYaml );
 				}
 			} else {
