@@ -16,19 +16,19 @@
  * limitations under the License.
  *
  * @package TorneLIB
- * @version 6.0.7
+ * @version 6.0.8
  */
 
 namespace TorneLIB;
 
 if ( ! defined( 'TORNELIB_IO_RELEASE' ) ) {
-	define( 'TORNELIB_IO_RELEASE', '6.0.7' );
+	define( 'TORNELIB_IO_RELEASE', '6.0.8' );
 }
 if ( ! defined( 'TORNELIB_IO_MODIFY' ) ) {
-	define( 'TORNELIB_IO_MODIFY', '20180419' );
+	define( 'TORNELIB_IO_MODIFY', '20180424' );
 }
 if ( ! defined( 'TORNELIB_IO_CLIENTNAME' ) ) {
-	define( 'TORNELIB_IO_CLIENTNAME', 'MODULE_CRYPTO' );
+	define( 'TORNELIB_IO_CLIENTNAME', 'MODULE_IO' );
 }
 
 if ( defined( 'TORNELIB_IO_REQUIRE' ) ) {
@@ -42,6 +42,10 @@ if ( defined( 'TORNELIB_IO_REQUIRE' ) ) {
 
 if ( ! class_exists( 'MODULE_IO' ) && ! class_exists( 'TorneLIB\MODULE_IO' ) && defined( 'TORNELIB_IO_ALLOW_AUTOLOAD' ) && TORNELIB_IO_ALLOW_AUTOLOAD === true ) {
 
+	/**
+	 * Class MODULE_IO
+	 * @package TorneLIB
+	 */
 	class MODULE_IO {
 
 		/** @var TorneLIB_Crypto $CRYPTO */
@@ -538,9 +542,19 @@ if ( ! class_exists( 'MODULE_IO' ) && ! class_exists( 'TorneLIB\MODULE_IO' ) && 
 						}
 						if ( isset( $simpleXML ) && ( is_object( $simpleXML ) || is_array( $simpleXML ) ) ) {
 							if ( ! $normalize ) {
+								/*								$xmlExtractedPath = $this->extractXmlPath( $simpleXML );
+																if ( ! is_null( $xmlExtractedPath ) && is_object( $xmlExtractedPath ) ) {
+																	return $this->arrayObjectToStdClass($xmlExtractedPath);
+																}*/
 								return $simpleXML;
 							} else {
-								return $this->arrayObjectToStdClass( $simpleXML );
+								$objectClass      = $this->arrayObjectToStdClass( $simpleXML );
+								$xmlExtractedPath = $this->extractXmlPath( $simpleXML );
+								if ( ! is_null( $xmlExtractedPath ) && is_object( $xmlExtractedPath ) ) {
+									return $this->arrayObjectToStdClass( $xmlExtractedPath );
+								}
+
+								return $objectClass;
 							}
 						}
 					}
@@ -548,6 +562,43 @@ if ( ! class_exists( 'MODULE_IO' ) && ! class_exists( 'TorneLIB\MODULE_IO' ) && 
 			}
 
 			return null;
+		}
+
+		/**
+		 * Check if there is something more than just an empty object hidden behind a SimpleXMLElement
+		 *
+		 * @param null $simpleXML
+		 *
+		 * @return array|mixed|null
+		 * @since 6.0.8
+		 */
+		private function extractXmlPath( $simpleXML = null ) {
+			$canReturn       = false;
+			$xmlXpath        = null;
+			$xmlPathReturner = null;
+			if ( method_exists( $simpleXML, 'xpath' ) ) {
+				try {
+					$xmlXpath = $simpleXML->xpath( "*/*" );
+				} catch ( \Exception $ignoreErrors ) {
+
+				}
+				if ( is_array( $xmlXpath ) ) {
+					if ( count( $xmlXpath ) == 1 ) {
+						$xmlPathReturner = array_pop( $xmlXpath );
+						$canReturn       = true;
+					} else if ( count( $xmlXpath ) > 1 ) {
+						$xmlPathReturner = $xmlXpath;
+						$canReturn       = true;
+					}
+					if ( isset( $xmlPathReturner->return ) ) {
+						$canReturn       = true;
+						$xmlPathReturner = $xmlPathReturner->return;
+					}
+				}
+			}
+			if ( $canReturn ) {
+				return $xmlPathReturner;
+			}
 		}
 
 		/**
