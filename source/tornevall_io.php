@@ -16,16 +16,16 @@
  * limitations under the License.
  *
  * @package TorneLIB
- * @version 6.0.10
+ * @version 6.0.11
  */
 
 namespace TorneLIB;
 
-if ( ! defined( 'TORNELIB_IO_RELEASE' ) ) {if ( ! preg_match( "/^\</", $dataEntity ) && preg_match( "/&\b(.*?)+;(.*)/is", $dataIn ) ) {
-	define( 'TORNELIB_IO_RELEASE', '6.0.9' );
+if ( ! defined( 'TORNELIB_IO_RELEASE' ) ) {
+	define( 'TORNELIB_IO_RELEASE', '6.0.11' );
 }
 if ( ! defined( 'TORNELIB_IO_MODIFY' ) ) {
-	define( 'TORNELIB_IO_MODIFY', '20180426' );
+	define( 'TORNELIB_IO_MODIFY', '20180514' );
 }
 if ( ! defined( 'TORNELIB_IO_CLIENTNAME' ) ) {
 	define( 'TORNELIB_IO_CLIENTNAME', 'MODULE_IO' );
