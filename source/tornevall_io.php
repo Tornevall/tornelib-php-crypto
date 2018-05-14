@@ -21,7 +21,7 @@
 
 namespace TorneLIB;
 
-if ( ! defined( 'TORNELIB_IO_RELEASE' ) ) {
+if ( ! defined( 'TORNELIB_IO_RELEASE' ) ) {if ( ! preg_match( "/^\</", $dataEntity ) && preg_match( "/&\b(.*?)+;(.*)/is", $dataIn ) ) {
 	define( 'TORNELIB_IO_RELEASE', '6.0.9' );
 }
 if ( ! defined( 'TORNELIB_IO_MODIFY' ) ) {
@@ -526,7 +526,9 @@ if ( ! class_exists( 'MODULE_IO' ) && ! class_exists( 'TorneLIB\MODULE_IO' ) && 
 		public function getFromXml( $dataIn = '', $normalize = false ) {
 			$dataIn = trim( $dataIn );
 
-			if ( preg_match( "/&\b(.*?)+;(.*)/is", $dataIn ) ) {
+			// Run entity checker only if there seems to be no initial tags located in the input string, as this may cause bad loops
+			// for PHP (in older versions this also cause SEGFAULTs)
+			if ( ! preg_match( "/^\</", $dataIn ) && preg_match( "/&\b(.*?)+;(.*)/is", $dataIn ) ) {
 				$dataEntity = trim( html_entity_decode( $dataIn ) );
 				if ( preg_match( "/^\</", $dataEntity ) ) {
 
