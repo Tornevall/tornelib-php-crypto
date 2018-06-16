@@ -402,12 +402,13 @@ if ( ! class_exists( 'MODULE_IO' ) && ! class_exists( 'TorneLIB\MODULE_IO' ) && 
 			return $contentRendered;
 		}
 
-		/**
-		 * @param string $serialInput
-		 *
-		 * @return mixed
-		 * @since 6.0.5
-		 */
+        /**
+         * @param string $serialInput
+         * @param bool   $assoc
+         *
+         * @return mixed
+         * @since 6.0.5
+         */
 		public function getFromSerializerInternal( $serialInput = '', $assoc = false ) {
 			if ( ! $assoc ) {
 				return @unserialize( $serialInput );
@@ -416,20 +417,21 @@ if ( ! class_exists( 'MODULE_IO' ) && ! class_exists( 'TorneLIB\MODULE_IO' ) && 
 			}
 		}
 
-		/**
-		 * ServerRenderer: Render yaml data
-		 *
-		 * Install:
-		 *  apt-get install libyaml-dev
-		 *  pecl install yaml
-		 *
-		 * @param array $contentData
-		 * @param bool $renderAndDie
-		 *
-		 * @return string
-		 * @throws \Exception
-		 * @since 6.0.1
-		 */
+        /**
+         * ServerRenderer: Render yaml data
+         *
+         * Install:
+         *  apt-get install libyaml-dev
+         *  pecl install yaml
+         *
+         * @param array $contentData
+         * @param bool  $renderAndDie
+         * @param int   $compression
+         *
+         * @return string
+         * @throws \Exception
+         * @since 6.0.1
+         */
 		public function renderYaml( $contentData = array(), $renderAndDie = false, $compression = TORNELIB_CRYPTO_TYPES::TYPE_NONE ) {
 			$objectArrayEncoded = $this->getUtf8( $this->objectsIntoArray( $contentData ) );
 			if ( function_exists( 'yaml_emit' ) ) {
@@ -446,19 +448,22 @@ if ( ! class_exists( 'MODULE_IO' ) && ! class_exists( 'TorneLIB\MODULE_IO' ) && 
 			}
 		}
 
-		/**
-		 * @param array $contentData
-		 * @param bool $renderAndDie
-		 * @param int $compression
-		 *
-		 * @return mixed
-		 * @throws \Exception
-		 * @since 6.0.1
-		 */
+        /**
+         * @param array  $contentData
+         * @param bool   $renderAndDie
+         * @param int    $compression
+         * @param string $initialTagName
+         * @param string $rootName
+         *
+         * @return mixed
+         * @throws \Exception
+         * @since 6.0.1
+         */
 		public function renderXml( $contentData = array(), $renderAndDie = false, $compression = TORNELIB_CRYPTO_TYPES::TYPE_NONE, $initialTagName = 'item', $rootName = 'XMLResponse' ) {
 			$serializerPath = stream_resolve_include_path( 'XML/Serializer.php' );
 			if ( ! empty( $serializerPath ) ) {
-				require_once( 'XML/Serializer.php' );
+                /** @noinspection PhpIncludeInspection */
+                require_once( 'XML/Serializer.php' );
 			}
 			$objectArrayEncoded = $this->getUtf8( $this->objectsIntoArray( $contentData ) );
 			$options            = array(
@@ -511,7 +516,10 @@ if ( ! class_exists( 'MODULE_IO' ) && ! class_exists( 'TorneLIB\MODULE_IO' ) && 
 				return null;
 			} else if ( is_array( $dataIn ) ) {
 				return null;
-			}
+			} else {
+			    // Fail.
+			    return null;
+            }
 		}
 
 		/**
@@ -550,7 +558,8 @@ if ( ! class_exists( 'MODULE_IO' ) && ! class_exists( 'TorneLIB\MODULE_IO' ) && 
 
 			if ( $this->getXmlUnSerializer() && $this->getHasXmlSerializer() ) {
 				if ( is_string( $dataIn ) && preg_match( "/\<(.*?)\>/s", $dataIn ) ) {
-					require_once( 'XML/Unserializer.php' );
+                    /** @noinspection PhpIncludeInspection */
+                    require_once( 'XML/Unserializer.php' );
 					$xmlSerializer = new \XML_Unserializer();
 					$xmlSerializer->unserialize( $dataIn );
 
