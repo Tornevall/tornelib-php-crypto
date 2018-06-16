@@ -594,6 +594,14 @@ if ( ! class_exists('MODULE_CRYPTO') && ! class_exists('TorneLIB\MODULE_CRYPTO')
 
         }
 
+        /**
+         * @param      $encryptedContent
+         * @param bool $asBase64
+         *
+         * @return string
+         * @throws \Exception
+         * @since 6.0.15
+         */
         public function getDecryptSsl($encryptedContent, $asBase64 = true)
         {
             $contentData = $encryptedContent;
