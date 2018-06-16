@@ -594,7 +594,8 @@ if ( ! class_exists('MODULE_CRYPTO') && ! class_exists('TorneLIB\MODULE_CRYPTO')
 
         }
 
-        public function getDecryptSsl($encryptedContent, $asBase64= true) {
+        public function getDecryptSsl($encryptedContent, $asBase64 = true)
+        {
             $contentData = $encryptedContent;
             if ($asBase64) {
                 $contentData = $this->base64url_decode($encryptedContent);
@@ -606,7 +607,8 @@ if ( ! class_exists('MODULE_CRYPTO') && ! class_exists('TorneLIB\MODULE_CRYPTO')
             }
 
             // TODO: openssl_random_pseudo_bytes
-            return openssl_decrypt($contentData, $this->OPENSSL_CIPHER_METHOD, $this->getAesKey(), OPENSSL_RAW_DATA, $this->getAesIv(true));
+            return openssl_decrypt($contentData, $this->OPENSSL_CIPHER_METHOD, $this->getAesKey(), OPENSSL_RAW_DATA,
+                $this->getAesIv(true));
         }
 
         /**
@@ -633,7 +635,7 @@ if ( ! class_exists('MODULE_CRYPTO') && ! class_exists('TorneLIB\MODULE_CRYPTO')
         public function aesDecrypt($encryptedContent = "", $asBase64 = true)
         {
 
-            if (!$this->USE_MCRYPT) {
+            if ( ! $this->USE_MCRYPT) {
                 return $this->getDecryptSsl($encryptedContent, $asBase64);
             }
 
