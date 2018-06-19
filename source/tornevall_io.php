@@ -22,10 +22,10 @@
 namespace TorneLIB;
 
 if ( ! defined('TORNELIB_IO_RELEASE')) {
-    define('TORNELIB_IO_RELEASE', '6.0.11');
+    define('TORNELIB_IO_RELEASE', '6.0.12');
 }
 if ( ! defined('TORNELIB_IO_MODIFY')) {
-    define('TORNELIB_IO_MODIFY', '20180514');
+    define('TORNELIB_IO_MODIFY', '20180619');
 }
 if ( ! defined('TORNELIB_IO_CLIENTNAME')) {
     define('TORNELIB_IO_CLIENTNAME', 'MODULE_IO');
@@ -580,6 +580,10 @@ if ( ! class_exists('MODULE_IO') && ! class_exists('TorneLIB\MODULE_IO') && defi
          */
         public function getFromXml($dataIn = '', $normalize = false)
         {
+            set_error_handler( function ( $errNo, $errStr ) {
+                throw new \Exception($errStr, $errNo);
+            }, E_ALL );
+
             $dataIn = trim($dataIn);
 
             // Run entity checker only if there seems to be no initial tags located in the input string, as this may cause bad loops
@@ -588,6 +592,7 @@ if ( ! class_exists('MODULE_IO') && ! class_exists('TorneLIB\MODULE_IO') && defi
                 $dataEntity = trim(html_entity_decode($dataIn));
                 if (preg_match("/^\</", $dataEntity)) {
 
+                    restore_error_handler();
                     return $this->getFromXml($dataEntity, $normalize);
                 }
 
@@ -598,6 +603,7 @@ if ( ! class_exists('MODULE_IO') && ! class_exists('TorneLIB\MODULE_IO') && defi
                         return null;
                     }
 
+                    restore_error_handler();
                     return $this->getFromXml($dataEntity, $normalize);
                 }
 
@@ -612,8 +618,10 @@ if ( ! class_exists('MODULE_IO') && ! class_exists('TorneLIB\MODULE_IO') && defi
                     $xmlSerializer->unserialize($dataIn);
 
                     if ( ! $normalize) {
+                        restore_error_handler();
                         return $xmlSerializer->getUnserializedData();
                     } else {
+                        restore_error_handler();
                         return $this->arrayObjectToStdClass($xmlSerializer->getUnserializedData());
                     }
                 }
@@ -627,10 +635,7 @@ if ( ! class_exists('MODULE_IO') && ! class_exists('TorneLIB\MODULE_IO') && defi
                         }
                         if (isset($simpleXML) && (is_object($simpleXML) || is_array($simpleXML))) {
                             if ( ! $normalize) {
-                                /*								$xmlExtractedPath = $this->extractXmlPath( $simpleXML );
-                                                                if ( ! is_null( $xmlExtractedPath ) && is_object( $xmlExtractedPath ) ) {
-                                                                    return $this->arrayObjectToStdClass($xmlExtractedPath);
-                                                                }*/
+                                restore_error_handler();
                                 return $simpleXML;
                             } else {
                                 $objectClass = $this->arrayObjectToStdClass($simpleXML);
@@ -638,11 +643,13 @@ if ( ! class_exists('MODULE_IO') && ! class_exists('TorneLIB\MODULE_IO') && defi
                                     $xmlExtractedPath = $this->extractXmlPath($simpleXML);
                                     if ( ! is_null($xmlExtractedPath)) {
                                         if (is_object($xmlExtractedPath) || (is_array($xmlExtractedPath) && count($xmlExtractedPath))) {
+                                            restore_error_handler();
                                             return $xmlExtractedPath;
                                         }
                                     }
                                 }
 
+                                restore_error_handler();
                                 return $objectClass;
                             }
                         }
