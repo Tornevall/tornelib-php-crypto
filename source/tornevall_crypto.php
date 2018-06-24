@@ -16,7 +16,7 @@
  * limitations under the License.
  *
  * @package TorneLIB
- * @version 6.0.16
+ * @version 6.0.17
  *
  * Crypto-IO Library. Anything that changes in those folders, will render version increase.
  */
@@ -24,10 +24,10 @@
 namespace TorneLIB;
 
 if ( ! defined('TORNELIB_CRYPTO_RELEASE')) {
-    define('TORNELIB_CRYPTO_RELEASE', '6.0.16');
+    define('TORNELIB_CRYPTO_RELEASE', '6.0.17');
 }
 if ( ! defined('TORNELIB_CRYPTO_MODIFY')) {
-    define('TORNELIB_CRYPTO_MODIFY', '20180619');
+    define('TORNELIB_CRYPTO_MODIFY', '20180624');
 }
 if ( ! defined('TORNELIB_CRYPTO_CLIENTNAME')) {
     define('TORNELIB_CRYPTO_CLIENTNAME', 'MODULE_CRYPTO');
@@ -893,7 +893,7 @@ if ( ! class_exists('MODULE_CRYPTO') && ! class_exists('TorneLIB\MODULE_CRYPTO')
     }
 }
 
-if ( ! class_exists('TORNELIB_CRYPTO_CRYPTOTYPES') && ! class_exists('TorneLIB\TORNELIB_CRYPTO_CRYPTOTYPES')) {
+if ( ! class_exists('TORNELIB_CRYPTO_TYPES') && ! class_exists('TorneLIB\TORNELIB_CRYPTO_TYPES')) {
     abstract class TORNELIB_CRYPTO_TYPES
     {
         const TYPE_NONE = 0;
