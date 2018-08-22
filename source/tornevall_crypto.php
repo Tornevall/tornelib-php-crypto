@@ -24,7 +24,7 @@
 namespace TorneLIB;
 
 if ( ! defined('TORNELIB_CRYPTO_RELEASE')) {
-    define('TORNELIB_CRYPTO_RELEASE', '6.0.18');
+    define('TORNELIB_CRYPTO_RELEASE', '6.0.19');
 }
 if ( ! defined('TORNELIB_CRYPTO_MODIFY')) {
     define('TORNELIB_CRYPTO_MODIFY', '20180822');
@@ -33,9 +33,9 @@ if ( ! defined('TORNELIB_CRYPTO_CLIENTNAME')) {
     define('TORNELIB_CRYPTO_CLIENTNAME', 'MODULE_CRYPTO');
 }
 if (!defined('CRYPTO_SKIP_AUTOLOAD')) {
-    define('CRYPTO_NO_CLASS_AUTOLOAD', false);
+    define('CRYPTO_CLASS_EXISTS_AUTOLOAD', true);
 } else {
-    define('CRYPTO_NO_CLASS_AUTOLOAD', true);
+    define('CRYPTO_CLASS_EXISTS_AUTOLOAD', false);
 }
 if (defined('TORNELIB_CRYPTO_REQUIRE')) {
     if ( ! defined('TORNELIB_CRYPTO_REQUIRE_OPERATOR')) {
@@ -49,7 +49,7 @@ if (defined('TORNELIB_CRYPTO_REQUIRE')) {
     }
 }
 
-if ( ! class_exists('MODULE_CRYPTO', CRYPTO_NO_CLASS_AUTOLOAD) && ! class_exists('TorneLIB\MODULE_CRYPTO', CRYPTO_NO_CLASS_AUTOLOAD) && defined('TORNELIB_CRYPTO_ALLOW_AUTOLOAD') && TORNELIB_CRYPTO_ALLOW_AUTOLOAD === true) {
+if ( ! class_exists('MODULE_CRYPTO', CRYPTO_CLASS_EXISTS_AUTOLOAD) && ! class_exists('TorneLIB\MODULE_CRYPTO', CRYPTO_CLASS_EXISTS_AUTOLOAD) && defined('TORNELIB_CRYPTO_ALLOW_AUTOLOAD') && TORNELIB_CRYPTO_ALLOW_AUTOLOAD === true) {
 
     /**
      * Class TorneLIB_Crypto
@@ -897,7 +897,7 @@ if ( ! class_exists('MODULE_CRYPTO', CRYPTO_NO_CLASS_AUTOLOAD) && ! class_exists
     }
 }
 
-if ( ! class_exists('TORNELIB_CRYPTO_TYPES', CRYPTO_NO_CLASS_AUTOLOAD) && ! class_exists('TorneLIB\TORNELIB_CRYPTO_TYPES', CRYPTO_NO_CLASS_AUTOLOAD)) {
+if ( ! class_exists('TORNELIB_CRYPTO_TYPES', CRYPTO_CLASS_EXISTS_AUTOLOAD) && ! class_exists('TorneLIB\TORNELIB_CRYPTO_TYPES', CRYPTO_CLASS_EXISTS_AUTOLOAD)) {
     abstract class TORNELIB_CRYPTO_TYPES
     {
         const TYPE_NONE = 0;
@@ -906,7 +906,7 @@ if ( ! class_exists('TORNELIB_CRYPTO_TYPES', CRYPTO_NO_CLASS_AUTOLOAD) && ! clas
     }
 }
 
-if ( ! class_exists('TorneLIB_Crypto', CRYPTO_NO_CLASS_AUTOLOAD) && ! class_exists('TorneLIB\TorneLIB_Crypto', CRYPTO_NO_CLASS_AUTOLOAD)) {
+if ( ! class_exists('TorneLIB_Crypto', CRYPTO_CLASS_EXISTS_AUTOLOAD) && ! class_exists('TorneLIB\TorneLIB_Crypto', CRYPTO_CLASS_EXISTS_AUTOLOAD)) {
     class TorneLIB_Crypto extends MODULE_CRYPTO
     {
     }
