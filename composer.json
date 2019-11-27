@@ -20,7 +20,7 @@
       "source/tornevall_io.php"
     ],
     "psr-4": {
-      "\\TorneLIB\\": "source"
+      "\\TorneLIB\\": "src"
     }
   }
 }
