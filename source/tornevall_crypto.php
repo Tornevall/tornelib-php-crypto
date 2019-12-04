@@ -153,18 +153,18 @@ if (!class_exists('MODULE_CRYPTO', CRYPTO_CLASS_EXISTS_AUTOLOAD) &&
          * @return string
          * @deprecated 6.0.4 Still here for people who needs it
          */
-        function mkpass_deprecated($complexity = 4, $setMax = 8, $webFriendly = false)
+        public function mkpass_deprecated($complexity = 4, $setMax = 8, $webFriendly = false)
         {
             $returnString = null;
-            $characterListArray = array(
+            $characterListArray = [
                 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
                 'abcdefghijklmnopqrstuvwxyz',
                 '0123456789',
-                '!@#$%*?'
-            );
+                '!@#$%*?',
+            ];
             // Set complexity to no limit if type 6 is requested
             if ($complexity == 6) {
-                $characterListArray = array('0' => '');
+                $characterListArray = ['0' => ''];
                 for ($unlim = 0; $unlim <= 255; $unlim++) {
                     $characterListArray[0] .= chr($unlim);
                 }
@@ -189,17 +189,36 @@ if (!class_exists('MODULE_CRYPTO', CRYPTO_CLASS_EXISTS_AUTOLOAD) &&
             if ($setMax > 0) {
                 $max = $setMax;
             }
-            $chars = array();
-            $numchars = array();
+            $chars = [];
+            $numchars = [];
             //$equalityPart = ceil( $max / count( $characterListArray ) );
             for ($i = 0; $i < $max; $i++) {
                 $charListId = rand(0, count($characterListArray) - 1);
                 if (!isset($numchars[$charListId])) {
                     $numchars[$charListId] = 0;
                 }
-                $numchars[$charListId]++;
-                $chars[] = $characterListArray[$charListId]{mt_rand(0, (strlen($characterListArray[$charListId]) - 1))};
+
+                if (isset($characterListArray[$charListId][
+                    mt_rand(
+                        0,
+                        (
+                            strlen(
+                                $characterListArray[$charListId]
+                            ) - 1
+                        )
+                    )])) {
+                    $numchars[$charListId]++;
+                    $chars[] = $characterListArray[$charListId][mt_rand(
+                        0,
+                        (
+                            strlen(
+                                $characterListArray[$charListId]
+                            ) - 1
+                        )
+                    )];
+                }
             }
+
             shuffle($chars);
             $returnString = implode("", $chars);
             if ($webFriendly) {
@@ -220,13 +239,13 @@ if (!class_exists('MODULE_CRYPTO', CRYPTO_CLASS_EXISTS_AUTOLOAD) &&
          */
         private function getCharacterListArray($type = 'upper')
         {
-            $compiledArray = array(
+            $compiledArray = [
                 'upper' => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
                 'lower' => 'abcdefghijklmnopqrstuvwxyz',
                 'numeric' => '0123456789',
                 'specials' => '!@#$%*?',
-                'table' => ''
-            );
+                'table' => '',
+            ];
             for ($i = 0; $i <= 255; $i++) {
                 $compiledArray['table'] .= chr($i);
             }
@@ -267,16 +286,16 @@ if (!class_exists('MODULE_CRYPTO', CRYPTO_CLASS_EXISTS_AUTOLOAD) &&
          * @return mixed|string
          * @since 6.0.4
          */
-        private function getRandomCharacterFromArray($type = array('upper'), $ambigous = false)
+        private function getRandomCharacterFromArray($type = ['upper'], $ambigous = false)
         {
             if (is_string($type)) {
-                $type = array($type);
+                $type = [$type];
             }
             $getType = $type[rand(0, count($type) - 1)];
             $characterArray = $this->getCharactersFromList($getType);
             $characterLength = count($characterArray) - 1;
             $chosenCharacter = $characterArray[rand(0, $characterLength)];
-            $ambigousList = array(
+            $ambigousList = [
                 '+',
                 '/',
                 '=',
@@ -286,8 +305,8 @@ if (!class_exists('MODULE_CRYPTO', CRYPTO_CLASS_EXISTS_AUTOLOAD) &&
                 'O',
                 'D',
                 'Q',
-                'R'
-            );
+                'R',
+            ];
             if (in_array($chosenCharacter, $ambigousList)) {
                 $chosenCharacter = $this->getRandomCharacterFromArray($type, $ambigous);
             }
@@ -308,22 +327,22 @@ if (!class_exists('MODULE_CRYPTO', CRYPTO_CLASS_EXISTS_AUTOLOAD) &&
         {
             switch ($complexity) {
                 case 1:
-                    return $this->getRandomCharacterFromArray(array('upper'), $ambigous);
+                    return $this->getRandomCharacterFromArray(['upper'], $ambigous);
                 case 2:
-                    return $this->getRandomCharacterFromArray(array('upper', 'lower'), $ambigous);
+                    return $this->getRandomCharacterFromArray(['upper', 'lower'], $ambigous);
                 case 3:
-                    return $this->getRandomCharacterFromArray(array('upper', 'lower', 'numeric'), $ambigous);
+                    return $this->getRandomCharacterFromArray(['upper', 'lower', 'numeric'], $ambigous);
                 case 4:
-                    return $this->getRandomCharacterFromArray(array(
+                    return $this->getRandomCharacterFromArray([
                         'upper',
                         'lower',
                         'numeric',
-                        'specials'
-                    ), $ambigous);
+                        'specials',
+                    ], $ambigous);
                 case 5:
-                    return $this->getRandomCharacterFromArray(array('table'));
+                    return $this->getRandomCharacterFromArray(['table']);
                 case 6:
-                    return $this->getRandomCharacterFromArray(array('table'));
+                    return $this->getRandomCharacterFromArray(['table']);
                 default:
                     return $this->getRandomCharacterFromArray('upper', $ambigous);
             }
@@ -547,7 +566,7 @@ if (!class_exists('MODULE_CRYPTO', CRYPTO_CLASS_EXISTS_AUTOLOAD) &&
         {
             $this->getOpenSslEncrypt();
             $cipherMethods = openssl_get_cipher_methods();
-            $skippedMethods = array();
+            $skippedMethods = [];
             $originalKey = $this->ENCRYPT_AES_KEY;
             $originalIv = $this->ENCRYPT_AES_IV;
             foreach ($cipherMethods as $method) {
@@ -793,9 +812,9 @@ if (!class_exists('MODULE_CRYPTO', CRYPTO_CLASS_EXISTS_AUTOLOAD) &&
          */
         public function base64_compress($data = '')
         {
-            $results = array();
+            $results = [];
             $bestCompression = null;
-            $lengthArray = array();
+            $lengthArray = [];
             if (function_exists('gzencode')) {
                 $results['gz0'] = $this->base64_gzencode("gz0:" . $data, 0);
                 $results['gz9'] = $this->base64_gzencode("gz9:" . $data, 9);
@@ -828,7 +847,7 @@ if (!class_exists('MODULE_CRYPTO', CRYPTO_CLASS_EXISTS_AUTOLOAD) &&
          */
         public function base64_decompress($data = '', $getCompressionType = false)
         {
-            $results = array();
+            $results = [];
             $results['gz'] = $this->base64_gzdecode($data);
             if (function_exists('bzdecompress')) {
                 $results['bz'] = $this->base64_bzdecode($data);
