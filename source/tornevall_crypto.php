@@ -198,25 +198,15 @@ if (!class_exists('MODULE_CRYPTO', CRYPTO_CLASS_EXISTS_AUTOLOAD) &&
                     $numchars[$charListId] = 0;
                 }
 
-                if (isset($characterListArray[$charListId][
-                    mt_rand(
-                        0,
-                        (
-                            strlen(
-                                $characterListArray[$charListId]
-                            ) - 1
-                        )
-                    )])) {
-                    $numchars[$charListId]++;
-                    $chars[] = $characterListArray[$charListId][mt_rand(
-                        0,
-                        (
-                            strlen(
-                                $characterListArray[$charListId]
-                            ) - 1
-                        )
-                    )];
-                }
+                $numchars[$charListId]++;
+                $chars[] = $characterListArray[$charListId][mt_rand(
+                    0,
+                    (
+                        strlen(
+                            $characterListArray[$charListId]
+                        ) - 1
+                    )
+                )];
             }
 
             shuffle($chars);
