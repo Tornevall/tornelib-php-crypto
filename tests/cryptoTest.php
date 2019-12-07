@@ -107,10 +107,12 @@ class cryptoTest extends TestCase
     {
         $this->setSimpleKeys();
         static::assertTrue(
-            $this->Crypto->getCipherTypeByString(
-                $this->encoded['aesopenssl'],
-                $this->testCompressString
-            ) == "AES-256-CBC"
+            strtolower(
+                $this->Crypto->getCipherTypeByString(
+                    $this->encoded['aesopenssl'],
+                    $this->testCompressString
+                )
+            ) == "aes-256-cbc"
         );
     }
 

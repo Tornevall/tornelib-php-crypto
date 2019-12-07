@@ -519,13 +519,20 @@ if (!class_exists('MODULE_CRYPTO', CRYPTO_CLASS_EXISTS_AUTOLOAD) &&
         private function setUseCipher($cipherConstant)
         {
             $this->getOpenSslEncrypt();
-            if (in_array($cipherConstant, openssl_get_cipher_methods())) {
+            $cipherMethods = openssl_get_cipher_methods();
+            if (
+                is_array($cipherMethods) &&
+                in_array(
+                    strtolower($cipherConstant),
+                    array_map('strtolower', $cipherMethods)
+                )
+            ) {
                 $this->OPENSSL_CIPHER_METHOD = $cipherConstant;
                 $this->OPENSSL_IV_LENGTH = $this->getIvLength($cipherConstant);
 
                 return $cipherConstant;
             }
-            throw new \Exception("Cipher does not exists in this openssl module");
+            throw new \Exception("Cipher does not exists in this openssl module", 404);
         }
 
         /** @noinspection PhpUnusedPrivateMethodInspection */
