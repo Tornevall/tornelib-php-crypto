@@ -1,11 +1,8 @@
 {
   "name": "tornevall/tornelib-php-crypto",
   "description": "Small library made for handling different kinds of crypto/encoding",
-  "minimum-stability": "stable",
   "license": "Apache-2.0",
-  "require": {
-    "php": ">=5.3"
-  },
+  "require": {},
   "authors": [
     {
       "name": "Tomas Tornevall",
