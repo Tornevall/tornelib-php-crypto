@@ -7,9 +7,7 @@
         "tornevall/tornelib-php-utils": ">6.1",
         "tornevall/tornelib-php-flags": ">6.1",
         "tornevall/tornelib-php-io": "dev-develop/6.1",
-        "tornevall/tornelib-php-errorhandler": ">6.1",
-        "ext-openssl": "*",
-        "ext-mcrypt": "*"
+        "tornevall/tornelib-php-errorhandler": ">6.1"
     },
     "authors": [
         {
