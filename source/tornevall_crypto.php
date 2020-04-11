@@ -24,10 +24,10 @@
 namespace TorneLIB;
 
 if (!defined('TORNELIB_CRYPTO_RELEASE')) {
-    define('TORNELIB_CRYPTO_RELEASE', '6.0.22');
+    define('TORNELIB_CRYPTO_RELEASE', '6.0.23');
 }
 if (!defined('TORNELIB_CRYPTO_MODIFY')) {
-    define('TORNELIB_CRYPTO_MODIFY', '20191207');
+    define('TORNELIB_CRYPTO_MODIFY', '20200411');
 }
 if (!defined('TORNELIB_CRYPTO_CLIENTNAME')) {
     define('TORNELIB_CRYPTO_CLIENTNAME', 'MODULE_CRYPTO');
@@ -63,13 +63,12 @@ if (!class_exists('MODULE_CRYPTO', CRYPTO_CLASS_EXISTS_AUTOLOAD) &&
         'TorneLIB\MODULE_CRYPTO',
         CRYPTO_CLASS_EXISTS_AUTOLOAD
     ) && defined('TORNELIB_CRYPTO_ALLOW_AUTOLOAD') && TORNELIB_CRYPTO_ALLOW_AUTOLOAD === true) {
-
     /**
      * Class TorneLIB_Crypto
+     * @deprecated Not supported by netcurl 6.1 - maintenance only - soon updating to 6.1
      */
     class MODULE_CRYPTO
     {
-
         private $ENCRYPT_AES_KEY = "";
         private $ENCRYPT_AES_IV = "";
 
@@ -201,8 +200,7 @@ if (!class_exists('MODULE_CRYPTO', CRYPTO_CLASS_EXISTS_AUTOLOAD) &&
                     $numchars[$charListId] = 0;
                 }
 
-                if (isset($characterListArray[$charListId][
-                    mt_rand(
+                if (isset($characterListArray[$charListId][mt_rand(
                         0,
                         (
                             strlen(

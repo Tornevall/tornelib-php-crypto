@@ -23,10 +23,10 @@
 namespace TorneLIB;
 
 if (!defined('TORNELIB_IO_RELEASE')) {
-    define('TORNELIB_IO_RELEASE', '6.0.17');
+    define('TORNELIB_IO_RELEASE', '6.0.18');
 }
 if (!defined('TORNELIB_IO_MODIFY')) {
-    define('TORNELIB_IO_MODIFY', '20190827');
+    define('TORNELIB_IO_MODIFY', '20200411');
 }
 if (!defined('TORNELIB_IO_CLIENTNAME')) {
     define('TORNELIB_IO_CLIENTNAME', 'MODULE_IO');
@@ -69,10 +69,10 @@ if (!class_exists('MODULE_IO', IO_CLASS_EXISTS_AUTOLOAD) &&
      * Class MODULE_IO
      *
      * @package TorneLIB
+     * @deprecated Not supported by netcurl 6.1 - maintenance only (moving to separate package) and soon updating to 6.1
      */
     class MODULE_IO
     {
-
         /** @var TorneLIB_Crypto $CRYPTO */
         private $CRYPTO;
         /** @var bool Enforce usage SimpleXML objects even if XML_Serializer is present */
@@ -243,7 +243,7 @@ if (!class_exists('MODULE_IO', IO_CLASS_EXISTS_AUTOLOAD) &&
          * @return object
          * @since 6.0.0
          */
-        public function arrayObjectToStdClass($objectArray = array(), $useJsonFunction = false)
+        public function arrayObjectToStdClass($objectArray = [], $useJsonFunction = false)
         {
             /**
              * If json_decode and json_encode exists as function, do it the simple way.
@@ -252,7 +252,7 @@ if (!class_exists('MODULE_IO', IO_CLASS_EXISTS_AUTOLOAD) &&
             if ((function_exists('json_decode') && function_exists('json_encode')) || $useJsonFunction) {
                 return json_decode(json_encode($objectArray));
             }
-            $newArray = array();
+            $newArray = [];
             if (is_array($objectArray) || is_object($objectArray)) {
                 foreach ($objectArray as $itemKey => $itemValue) {
                     if (is_array($itemValue)) {
@@ -277,9 +277,9 @@ if (!class_exists('MODULE_IO', IO_CLASS_EXISTS_AUTOLOAD) &&
          * @return array
          * @since 6.0.0
          */
-        public function objectsIntoArray($arrObjData, $arrSkipIndices = array())
+        public function objectsIntoArray($arrObjData, $arrSkipIndices = [])
         {
-            $arrData = array();
+            $arrData = [];
             // if input is object, convert into array
             if (is_object($arrObjData)) {
                 $arrObjData = get_object_vars($arrObjData);
@@ -308,7 +308,7 @@ if (!class_exists('MODULE_IO', IO_CLASS_EXISTS_AUTOLOAD) &&
          * @todo Fix PSR compliance (by switching the places of default arguments, if you do want to get rid of the nulled $xml)
          * @todo Get rid of camelcase
          */
-        private function array_to_xml($dataArray = array(), $xml = null)
+        private function array_to_xml($dataArray = [], $xml = null)
         {
             foreach ($dataArray as $key => $value) {
                 $key = is_numeric($key) ? 'item' : $key;
@@ -330,9 +330,9 @@ if (!class_exists('MODULE_IO', IO_CLASS_EXISTS_AUTOLOAD) &&
          * @return array
          * @since 6.0.0
          */
-        private function getUtf8($dataArray = array())
+        private function getUtf8($dataArray = [])
         {
-            $newArray = array();
+            $newArray = [];
             if (is_array($dataArray)) {
                 foreach ($dataArray as $p => $v) {
                     if (is_array($v) || is_object($v)) {
@@ -357,7 +357,7 @@ if (!class_exists('MODULE_IO', IO_CLASS_EXISTS_AUTOLOAD) &&
          */
         public function isAssoc(array $arrayData)
         {
-            if (array() === $arrayData) {
+            if ([] === $arrayData) {
                 return false;
             }
 
@@ -388,9 +388,9 @@ if (!class_exists('MODULE_IO', IO_CLASS_EXISTS_AUTOLOAD) &&
 
             if ($renderAndDie) {
                 if ($compression == TORNELIB_CRYPTO_TYPES::TYPE_GZ) {
-                    $contentString = array('gz' => $contentString);
+                    $contentString = ['gz' => $contentString];
                 } elseif ($compression == TORNELIB_CRYPTO_TYPES::TYPE_BZ2) {
-                    $contentString = array('bz2' => $contentString);
+                    $contentString = ['bz2' => $contentString];
                 }
             }
 
@@ -409,7 +409,7 @@ if (!class_exists('MODULE_IO', IO_CLASS_EXISTS_AUTOLOAD) &&
          * @since 6.0.1
          */
         public function renderJson(
-            $contentData = array(),
+            $contentData = [],
             $renderAndDie = false,
             $compression = TORNELIB_CRYPTO_TYPES::TYPE_NONE
         ) {
@@ -446,7 +446,7 @@ if (!class_exists('MODULE_IO', IO_CLASS_EXISTS_AUTOLOAD) &&
          * @since 6.0.1
          */
         public function renderPhpSerialize(
-            $contentData = array(),
+            $contentData = [],
             $renderAndDie = false,
             $compression = TORNELIB_CRYPTO_TYPES::TYPE_NONE
         ) {
@@ -499,7 +499,7 @@ if (!class_exists('MODULE_IO', IO_CLASS_EXISTS_AUTOLOAD) &&
          * @since 6.0.1
          */
         public function renderYaml(
-            $contentData = array(),
+            $contentData = [],
             $renderAndDie = false,
             $compression = TORNELIB_CRYPTO_TYPES::TYPE_NONE
         ) {
@@ -534,7 +534,7 @@ if (!class_exists('MODULE_IO', IO_CLASS_EXISTS_AUTOLOAD) &&
          * @since 6.0.1
          */
         public function renderXml(
-            $contentData = array(),
+            $contentData = [],
             $renderAndDie = false,
             $compression = TORNELIB_CRYPTO_TYPES::TYPE_NONE,
             $initialTagName = 'item',
@@ -546,13 +546,13 @@ if (!class_exists('MODULE_IO', IO_CLASS_EXISTS_AUTOLOAD) &&
                 require_once('XML/Serializer.php');
             }
             $objectArrayEncoded = $this->getUtf8($this->objectsIntoArray($contentData));
-            $options = array(
+            $options = [
                 'indent' => '    ',
                 'linebreak' => "\n",
                 'encoding' => 'UTF-8',
                 'rootName' => $rootName,
-                'defaultTagName' => $initialTagName
-            );
+                'defaultTagName' => $initialTagName,
+            ];
             if (class_exists('XML_Serializer', IO_CLASS_EXISTS_AUTOLOAD) && !$this->ENFORCE_SIMPLEXML) {
                 $xmlSerializer = new \XML_Serializer($options);
                 $xmlSerializer->serialize($objectArrayEncoded);

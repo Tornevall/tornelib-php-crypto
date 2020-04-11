@@ -9,7 +9,6 @@ if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
 
 class cryptoTest extends TestCase
 {
-
     /** @var $Crypto MODULE_CRYPTO */
     private $Crypto;
 
@@ -19,10 +18,10 @@ class cryptoTest extends TestCase
     private $testStatic16k = "dbe98c0a8d49a9fa";
     private $testStatic16i = "a16420a8f2bad32e";
 
-    private $encoded = array(
+    private $encoded = [
         'aes' => 'Z_UWXTvTYTnFS4J0jS7g23oMv07uEdJuu0alwNsXqqU',
-        'aesopenssl' => '7A1OoExi-lj_O3oyIky3o3NUbJxyoNtSSaoBsNZJI1A'
-    );
+        'aesopenssl' => '7A1OoExi-lj_O3oyIky3o3NUbJxyoNtSSaoBsNZJI1A',
+    ];
 
     private $GZ_COMPRESSION_BASE = "H4sIAAAAAAAEAwERAO7_VGVzdGluZyBteSBzdHJpbmf030_XEQAAAA";
     private $GZ_COMPRESSION_9 = "H4sIAAAAAAACAwtJLS7JzEtXyK1UKC4pArIA9N9P1xEAAAA";
