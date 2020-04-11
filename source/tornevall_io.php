@@ -617,7 +617,7 @@ if (!class_exists('MODULE_IO', IO_CLASS_EXISTS_AUTOLOAD) &&
         {
             set_error_handler(function ($errNo, $errStr) {
                 throw new \Exception($errStr, $errNo);
-            }, E_ALL);
+            }, E_WARNING);
 
             $dataIn = trim($dataIn);
 
