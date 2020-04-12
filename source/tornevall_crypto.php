@@ -16,7 +16,7 @@
  * limitations under the License.
  *
  * @package TorneLIB
- * @version 6.0.23
+ * @version 6.0.24
  *
  * Crypto-IO Library. Anything that changes in those folders, will render version increase.
  */
@@ -24,10 +24,10 @@
 namespace TorneLIB;
 
 if (!defined('TORNELIB_CRYPTO_RELEASE')) {
-    define('TORNELIB_CRYPTO_RELEASE', '6.0.23');
+    define('TORNELIB_CRYPTO_RELEASE', '6.0.24');
 }
 if (!defined('TORNELIB_CRYPTO_MODIFY')) {
-    define('TORNELIB_CRYPTO_MODIFY', '20200411');
+    define('TORNELIB_CRYPTO_MODIFY', '20200412');
 }
 if (!defined('TORNELIB_CRYPTO_CLIENTNAME')) {
     define('TORNELIB_CRYPTO_CLIENTNAME', 'MODULE_CRYPTO');
@@ -269,7 +269,6 @@ if (!class_exists('MODULE_CRYPTO', CRYPTO_CLASS_EXISTS_AUTOLOAD) &&
          * Returns a selected character list array string as a new array
          *
          * @param string $type
-         *
          * @return array|false|string[]
          * @since 6.0.4
          */
@@ -283,7 +282,6 @@ if (!class_exists('MODULE_CRYPTO', CRYPTO_CLASS_EXISTS_AUTOLOAD) &&
          *
          * @param array $type
          * @param bool $ambigous
-         *
          * @return mixed|string
          * @since 6.0.4
          */
@@ -340,9 +338,8 @@ if (!class_exists('MODULE_CRYPTO', CRYPTO_CLASS_EXISTS_AUTOLOAD) &&
                         'numeric',
                         'specials',
                     ], $ambigous);
-                case 5:
-                    return $this->getRandomCharacterFromArray(['table']);
                 case 6:
+                case 5:
                     return $this->getRandomCharacterFromArray(['table']);
                 default:
                     return $this->getRandomCharacterFromArray('upper', $ambigous);
@@ -355,7 +352,6 @@ if (!class_exists('MODULE_CRYPTO', CRYPTO_CLASS_EXISTS_AUTOLOAD) &&
          * @param int $complexity 1=UPPERCASE, 2=UPPERCASE+lowercase, 3=UPPERCASE+lowercase+numerics, 4=UPPERCASE,lowercase+numerics+specialcharacters, 5/6=Full character set
          * @param int $totalLength Length of the string
          * @param bool $ambigous Exclude what we see as ambigous characters (this has no effect in complexity > 4)
-         *
          * @return string
          * @since 6.0.4
          */
@@ -497,8 +493,12 @@ if (!class_exists('MODULE_CRYPTO', CRYPTO_CLASS_EXISTS_AUTOLOAD) &&
                 $contentData = utf8_encode($decryptedContent);
             }
             /** @noinspection PhpDeprecationInspection */
-            $binEnc = mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $this->ENCRYPT_AES_KEY, $contentData, MCRYPT_MODE_CBC,
-                $this->ENCRYPT_AES_IV);
+            $binEnc = mcrypt_encrypt(
+                MCRYPT_RIJNDAEL_256,
+                $this->ENCRYPT_AES_KEY,
+                $contentData, MCRYPT_MODE_CBC,
+                $this->ENCRYPT_AES_IV
+            );
             $baseEncoded = $this->base64url_encode($binEnc);
             if ($asBase64) {
                 return $baseEncoded;
@@ -694,7 +694,6 @@ if (!class_exists('MODULE_CRYPTO', CRYPTO_CLASS_EXISTS_AUTOLOAD) &&
          */
         public function aesDecrypt($encryptedContent = "", $asBase64 = true)
         {
-
             if (!$this->USE_MCRYPT || version_compare(PHP_VERSION, '7.3', '>=')) {
                 return $this->getDecryptSsl($encryptedContent, $asBase64);
             }

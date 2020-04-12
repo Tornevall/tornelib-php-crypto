@@ -23,10 +23,10 @@
 namespace TorneLIB;
 
 if (!defined('TORNELIB_IO_RELEASE')) {
-    define('TORNELIB_IO_RELEASE', '6.0.18');
+    define('TORNELIB_IO_RELEASE', '6.0.19');
 }
 if (!defined('TORNELIB_IO_MODIFY')) {
-    define('TORNELIB_IO_MODIFY', '20200411');
+    define('TORNELIB_IO_MODIFY', '20200412');
 }
 if (!defined('TORNELIB_IO_CLIENTNAME')) {
     define('TORNELIB_IO_CLIENTNAME', 'MODULE_IO');
@@ -69,7 +69,8 @@ if (!class_exists('MODULE_IO', IO_CLASS_EXISTS_AUTOLOAD) &&
      * Class MODULE_IO
      *
      * @package TorneLIB
-     * @deprecated Not supported by netcurl 6.1 - maintenance only (moving to separate package) and soon updating to 6.1
+     * @deprecated Check v6.1 instead. PSR4 supported.
+     * Maintenance only (moving to separate package) and soon updating to 6.1
      */
     class MODULE_IO
     {
@@ -617,7 +618,7 @@ if (!class_exists('MODULE_IO', IO_CLASS_EXISTS_AUTOLOAD) &&
         {
             set_error_handler(function ($errNo, $errStr) {
                 throw new \Exception($errStr, $errNo);
-            }, E_ALL);
+            }, E_WARNING);
 
             $dataIn = trim($dataIn);
 
@@ -775,12 +776,5 @@ if (!class_exists('MODULE_IO', IO_CLASS_EXISTS_AUTOLOAD) &&
             }
         }
 
-    }
-}
-
-if (!class_exists('TorneLIB_IO', IO_CLASS_EXISTS_AUTOLOAD) && !class_exists('TorneLIB\TorneLIB_IO',
-        IO_CLASS_EXISTS_AUTOLOAD)) {
-    class TorneLIB_IO extends MODULE_IO
-    {
     }
 }
