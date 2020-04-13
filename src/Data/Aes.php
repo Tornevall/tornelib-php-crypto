@@ -6,6 +6,7 @@ use TorneLIB\Config\Flag;
 use TorneLIB\Exception\Constants;
 use TorneLIB\Exception\ExceptionHandler;
 use TorneLIB\IO\Data\Strings;
+use TorneLIB\Utils\Security;
 
 /**
  * Class Aes
@@ -65,7 +66,7 @@ class Aes
      * openssl has higher priority.
      *
      * @return $this
-     * @throws Exception
+     * @throws ExceptionHandler
      */
     private function setCryptoLib()
     {
@@ -75,11 +76,22 @@ class Aes
             $this->canMcrypt = true;
         }
 
-        if (function_exists('openssl_encrypt')) {
+        // Depend on openssl. If not there, fallback to mcrypt.
+        if (Security::getCurrentFunctionState('openssl_encrypt', false)) {
             $this->cryptoLib = Aes::CRYPTO_SSL;
             $this->setCipher();
-        } elseif (function_exists('mcrypt_encrypt')) {
-            $this->cryptoLib = Aes::CRYPTO_MCRYPT;
+        } elseif (Security::getCurrentFunctionState('mcrypt_encrypt', false)) {
+            // If mcrypt is present but platform is PHP 7.1+ we won't proceed as there are
+            // no proper encryption available.
+            if (version_compare(PHP_VERSION, '7.1', '>=')) {
+                $this->cryptoLib = Aes::CRYPTO_MCRYPT;
+                $this->canMcrypt = true;
+            } else {
+                throw new ExceptionHandler(
+                    'OpenSSL is unavailable in your platform and mcrypt is deprecated in PHP releases above 7.1.',
+                    Constants::LIB_METHOD_OR_LIBRARY_UNAVAILABLE
+                );
+            }
         }
 
         return $this;
@@ -98,11 +110,19 @@ class Aes
      * @param $iv
      * @param string $method
      * @return Aes
+     * @throws ExceptionHandler
      * @since 6.1.0
      */
     public function setAesKeys($key, $iv, $method = 'sha1')
     {
-        if (Flag::getFlag('mcrypt') && $method === 'sha1') {
+        // Check if a testflag is available, to switch over to mcrypt.
+        // If openssl is absent, switch over to mcrypt keying (md5 instead of sha1) automatically.
+        if (
+            (
+                Flag::getFlag('mcrypt') ||
+                !Security::getCurrentFunctionState('openssl_encrypt', false)
+            ) &&
+            $method === 'sha1') {
             $method = 'md5';
         }
 
@@ -123,11 +143,12 @@ class Aes
     /**
      * @param bool $adjustLength
      * @return mixed
+     * @throws ExceptionHandler
      * @since 6.0.15
      */
     public function getAesIv($adjustLength = true)
     {
-        if (function_exists('openssl_cipher_iv_length')) {
+        if (Security::getCurrentFunctionState('openssl_cipher_iv_length', false)) {
             if ($adjustLength) {
                 $this->aesIvLength = openssl_cipher_iv_length($this->getSslCipherType());
                 if ((int)$this->aesIvLength >= 0) {
@@ -156,15 +177,6 @@ class Aes
     public function setCompressionLevel($compressionLevel = 9)
     {
         $this->compressionLevel = $compressionLevel;
-    }
-
-    /**
-     * @return int
-     * @since 6.1.0
-     */
-    public function getCompressionLevel()
-    {
-        return $this->compressionLevel;
     }
 
     /**
@@ -203,7 +215,13 @@ class Aes
 
     public function aesEncrypt($dataToEncrypt = '', $asBase64 = true, $forceUtf8 = true)
     {
-        if (Flag::getFlag('mcrypt') && $this->canMcrypt) {
+        if (
+            (
+                $this->getCryptoLib() === self::CRYPTO_MCRYPT ||
+                Flag::getFlag('mcrypt')
+            ) &&
+            $this->canMcrypt
+        ) {
             $return = $this->getEncryptedMcrypt(
                 $dataToEncrypt,
                 $asBase64,
@@ -259,6 +277,7 @@ class Aes
      * @param bool $asBase64
      * @param bool $forceUtf8
      * @return string
+     * @throws ExceptionHandler
      */
     private function getEncryptedMcrypt(
         $dataToEncrypt = '',

@@ -27,13 +27,12 @@ class Crypto
     /**
      * @var Aes
      */
-    private $Aes;
+    private $aes;
 
     /**
-     * @var int
-     * @since 6.1.0
+     * @var Compress
      */
-    private $compressionLevel = 5;
+    private $compress;
 
     /**
      * Crypto constructor.
@@ -42,17 +41,26 @@ class Crypto
     public function __construct()
     {
         $this->password = new Password();
-        $this->Aes = new Aes();
+        $this->aes = new Aes();
+        $this->compress = new Compress();
 
         return $this;
     }
 
     public function __call($name, $arguments)
     {
-        if (method_exists($this->Aes, $name)) {
+        if (method_exists($this->aes, $name)) {
             return call_user_func_array(
                 [
-                    $this->Aes,
+                    $this->aes,
+                    $name,
+                ],
+                $arguments
+            );
+        } elseif (method_exists($this->aes, $name)) {
+            return call_user_func_array(
+                [
+                    $this->compress,
                     $name,
                 ],
                 $arguments

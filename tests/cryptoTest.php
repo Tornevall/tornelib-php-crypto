@@ -2,6 +2,7 @@
 
 use PHPUnit\Framework\TestCase;
 use TorneLIB\Config\Flag;
+use TorneLIB\Data\Aes;
 use TorneLIB\Data\Crypto;
 use TorneLIB\Data\Password;
 use TorneLIB\Exception\ExceptionHandler;
@@ -12,6 +13,7 @@ class cryptoTest extends TestCase
 {
     /**
      * @test
+     * Get uppercase only "keycode".
      */
     public function getMkPassUpper()
     {
@@ -31,6 +33,7 @@ class cryptoTest extends TestCase
 
     /**
      * @test
+     * Get lowercase only "keycode".
      */
     public function getMkPassLower()
     {
@@ -50,6 +53,7 @@ class cryptoTest extends TestCase
 
     /**
      * @test
+     * Get mixed keycode (upper+lowercase).
      */
     public function getMkPassUpperLower()
     {
@@ -70,6 +74,7 @@ class cryptoTest extends TestCase
 
     /**
      * @test
+     * Get "default" keycode string.
      */
     public function getMkPassWithoutParams()
     {
@@ -84,6 +89,7 @@ class cryptoTest extends TestCase
 
     /**
      * @test
+     * Get uppercase keycode directly from password class.
      */
     public function getMiniPass()
     {
@@ -96,16 +102,18 @@ class cryptoTest extends TestCase
 
     /**
      * @test
+     * Test if openssl is present as most of the crypto class is depending on it.
      */
     public function getCryptoLib()
     {
         static::assertTrue(
-            (new Crypto())->getCryptoLib() === Crypto::CRYPTO_SSL
+            (new Aes())->getCryptoLib() === Crypto::CRYPTO_SSL
         );
     }
 
     /**
      * @test
+     * Test basic encryption. This encryption was in 6.0 similar in both mcrypt and openssl.
      */
     public function getEncryptedString()
     {
@@ -113,13 +121,17 @@ class cryptoTest extends TestCase
             ->setAesKeys('MyKey', 'MyIV')
             ->aesEncrypt('EncryptME');
 
+        // First string is openssl encrypted.
+        // Second string is mcrypt encrypted.
         static::assertTrue(
-            $encData === 'U5Te2R-G-sxgBIC-FXkdXA'
+            $encData === 'U5Te2R-G-sxgBIC-FXkdXA' ||
+            $encData === '2qKNH_JrlZHyq-nJFaFR5gC2J5iFD7rFFts6Ikr7IMY'
         );
     }
 
     /**
      * @test
+     * Test basic encryption when openssl isn't there.
      */
     public function getEncryptedStringMcrypt()
     {
