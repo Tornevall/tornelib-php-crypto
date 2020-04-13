@@ -2,6 +2,9 @@
 
 namespace TorneLIB\Data;
 
+use TorneLIB\Exception\Constants;
+use TorneLIB\Exception\ExceptionHandler;
+
 /**
  * Class Crypto
  * @package TorneLIB\Data
@@ -47,10 +50,19 @@ class Crypto
         return $this;
     }
 
+    /**
+     * @param $name
+     * @param $arguments
+     * @return mixed
+     * @throws ExceptionHandler
+     * @snice 6.1.0
+     */
     public function __call($name, $arguments)
     {
+        $return = null;
+
         if (method_exists($this->aes, $name)) {
-            return call_user_func_array(
+            $return = call_user_func_array(
                 [
                     $this->aes,
                     $name,
@@ -58,7 +70,7 @@ class Crypto
                 $arguments
             );
         } elseif (method_exists($this->aes, $name)) {
-            return call_user_func_array(
+            $return = call_user_func_array(
                 [
                     $this->compress,
                     $name,
@@ -66,7 +78,7 @@ class Crypto
                 $arguments
             );
         } elseif (method_exists($this->password, $name)) {
-            return call_user_func_array(
+            $return = call_user_func_array(
                 [
                     $this->password,
                     $name,
@@ -74,5 +86,18 @@ class Crypto
                 $arguments
             );
         }
+
+        if (is_null($return)) {
+            throw new ExceptionHandler(
+                sprintf(
+                    'There is no method named "%s" in class %s',
+                    $name,
+                    __CLASS__
+                ),
+                Constants::LIB_METHOD_OR_LIBRARY_UNAVAILABLE
+            );
+        }
+
+        return $return;
     }
 }

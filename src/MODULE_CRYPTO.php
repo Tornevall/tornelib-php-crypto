@@ -17,7 +17,6 @@
  * @package TorneLIB
  * @version 6.1.0
  * @since 6.0
- *
  */
 
 namespace TorneLIB;
