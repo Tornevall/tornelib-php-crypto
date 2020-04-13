@@ -1,12 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<phpunit bootstrap="vendor/autoload.php"
-         colors="true"
-         verbose="true"
-         processisolation="true"
-         stopOnFailure="false">
+<phpunit bootstrap="vendor/autoload.php" colors="true" verbose="true" stopOnFailure="false">
     <testsuites>
-        <testsuite name="NetCurl with friends">
+        <testsuite name="tornelib-php-crypto">
             <directory>tests</directory>
         </testsuite>
     </testsuites>
+
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">./src</directory>
+        </whitelist>
+    </filter>
+
+    <logging>
+        <log type="coverage-html" target="build/coverage/html"/>
+        <log type="coverage-xml" target="build/coverage/xml"/>
+    </logging>
 </phpunit>
