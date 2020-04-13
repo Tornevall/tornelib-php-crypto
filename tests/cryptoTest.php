@@ -2,6 +2,7 @@
 
 use PHPUnit\Framework\TestCase;
 use TorneLIB\MODULE_CRYPTO;
+use TorneLIB\TorneLIB_Crypto;
 
 if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
     require_once(__DIR__ . '/../vendor/autoload.php');
@@ -218,6 +219,7 @@ class cryptoTest extends TestCase
      */
     public function randomSaltStaticMkPassBackwardCompat()
     {
-        static::assertTrue(strlen(\TorneLIB\TorneLIB_Crypto::getRandomSalt(1, 16)) == 16);
+        static::assertTrue(
+            strlen(MODULE_CRYPTO::getRandomSalt(1, 16)) == 16);
     }
 }

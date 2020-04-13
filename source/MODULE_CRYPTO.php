@@ -375,7 +375,7 @@ if (!class_exists('MODULE_CRYPTO', CRYPTO_CLASS_EXISTS_AUTOLOAD) &&
          */
         public static function getRandomSalt($complexity = 4, $totalLength = 16, $ambigous = false)
         {
-            $selfInstance = new TorneLIB_Crypto();
+            $selfInstance = new MODULE_CRYPTO();
 
             return $selfInstance->mkpass($complexity, $totalLength, $ambigous);
         }
