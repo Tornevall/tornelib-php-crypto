@@ -306,8 +306,7 @@ if (!class_exists('MODULE_IO', IO_CLASS_EXISTS_AUTOLOAD) &&
          *
          * @return mixed
          * @since 6.0.3
-         * @todo Fix PSR compliance (by switching the places of default arguments, if you do want to get rid of the nulled $xml)
-         * @todo Get rid of camelcase
+         * @deprecated Got rid of camelcase. Did it in PSR4. Upgrade to v6.1 ASAP.
          */
         private function array_to_xml($dataArray = [], $xml = null)
         {
@@ -587,7 +586,6 @@ if (!class_exists('MODULE_IO', IO_CLASS_EXISTS_AUTOLOAD) &&
 
         /**
          * @param string $dataIn
-         *
          * @return mixed|string
          * @since 6.0.5
          */

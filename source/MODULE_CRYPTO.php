@@ -960,32 +960,3 @@ if (!class_exists('MODULE_CRYPTO', CRYPTO_CLASS_EXISTS_AUTOLOAD) &&
         }
     }
 }
-
-/**
- * @todo Split extenders to another place
- */
-
-if (!class_exists('TORNELIB_CRYPTO_TYPES', CRYPTO_CLASS_EXISTS_AUTOLOAD) &&
-    !class_exists(
-        'TorneLIB\TORNELIB_CRYPTO_TYPES',
-        CRYPTO_CLASS_EXISTS_AUTOLOAD
-    )
-) {
-    abstract class TORNELIB_CRYPTO_TYPES
-    {
-        const TYPE_NONE = 0;
-        const TYPE_GZ = 1;
-        const TYPE_BZ2 = 2;
-    }
-}
-
-if (!class_exists('TorneLIB_Crypto', CRYPTO_CLASS_EXISTS_AUTOLOAD) &&
-    !class_exists(
-        'TorneLIB\TorneLIB_Crypto',
-        CRYPTO_CLASS_EXISTS_AUTOLOAD
-    )
-) {
-    class TorneLIB_Crypto extends MODULE_CRYPTO
-    {
-    }
-}
