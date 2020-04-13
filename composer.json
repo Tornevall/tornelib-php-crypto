@@ -11,6 +11,10 @@
     }
   ],
   "autoload": {
+    "files": [
+      "source/MODULE_CRYPTO.php",
+      "source/MODULE_IO.php"
+    ],
     "psr-4": {
       "TorneLIB\\": "source"
     }

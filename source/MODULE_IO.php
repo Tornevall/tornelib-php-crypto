@@ -98,7 +98,7 @@ if (!class_exists('MODULE_IO', IO_CLASS_EXISTS_AUTOLOAD) &&
         public function setCrypto()
         {
             if (empty($this->CRYPTO)) {
-                $this->CRYPTO = new TorneLIB_Crypto();
+                $this->CRYPTO = new MODULE_CRYPTO();
             }
         }
 
