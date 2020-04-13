@@ -2,7 +2,6 @@
   "name": "tornevall/tornelib-php-crypto",
   "description": "Crypto and I/O library for TorneLIB, handling encryption and data.",
   "license": "Apache-2.0",
-  "minimum-stability": "dev",
   "authors": [
     {
       "name": "Tomas Tornevall",
