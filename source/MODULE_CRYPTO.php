@@ -17,6 +17,7 @@
  *
  * @package TorneLIB
  * @version 6.0.25
+ * @deprecated Maintenance only.
  *
  * Crypto-IO Library. Anything that changes in those folders, will render version increase.
  */
@@ -27,7 +28,7 @@ if (!defined('TORNELIB_CRYPTO_RELEASE')) {
     define('TORNELIB_CRYPTO_RELEASE', '6.0.25');
 }
 if (!defined('TORNELIB_CRYPTO_MODIFY')) {
-    define('TORNELIB_CRYPTO_MODIFY', '20200413');
+    define('TORNELIB_CRYPTO_MODIFY', '20200419');
 }
 if (!defined('TORNELIB_CRYPTO_CLIENTNAME')) {
     define('TORNELIB_CRYPTO_CLIENTNAME', 'MODULE_CRYPTO');
