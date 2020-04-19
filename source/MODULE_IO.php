@@ -665,12 +665,24 @@ if (!class_exists('MODULE_IO', IO_CLASS_EXISTS_AUTOLOAD) &&
                 }
             } else {
                 if (class_exists('SimpleXMLElement', IO_CLASS_EXISTS_AUTOLOAD)) {
+                    $options = defined('LIBXML_NOERROR') ? LIBXML_NOERROR : 32;
+                    if (function_exists('libxml_use_internal_errors')) {
+                        libxml_use_internal_errors(false);
+                    }
                     if (is_string($dataIn) && preg_match("/\<(.*?)\>/s", $dataIn)) {
-                        if ($this->ENFORCE_CDATA) {
-                            $simpleXML = new \SimpleXMLElement($dataIn, LIBXML_NOCDATA);
-                        } else {
-                            $simpleXML = new \SimpleXMLElement($dataIn);
+                        try {
+                            if ($this->ENFORCE_CDATA) {
+                                $options += defined('LIBXML_NOCDATA') ? LIBXML_NOCDATA : 16384;
+                                $simpleXML = new \SimpleXMLElement($dataIn, $options);
+                            } else {
+                                $simpleXML = new \SimpleXMLElement($dataIn, $options);
+                            }
+                        } catch (\Exception $e) {
+                            restore_error_handler();
+                            return null;
                         }
+                        restore_error_handler();
+
                         if (isset($simpleXML) && (is_object($simpleXML) || is_array($simpleXML))) {
                             if (!$normalize) {
                                 restore_error_handler();
