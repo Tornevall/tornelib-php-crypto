@@ -18,15 +18,16 @@
  * The below version is the package version, not the separate version.
  * @package TorneLIB
  * @version 6.0.21
+ * @deprecated Maintenance only.
  */
 
 namespace TorneLIB;
 
 if (!defined('TORNELIB_IO_RELEASE')) {
-    define('TORNELIB_IO_RELEASE', '6.0.20');
+    define('TORNELIB_IO_RELEASE', '6.0.21');
 }
 if (!defined('TORNELIB_IO_MODIFY')) {
-    define('TORNELIB_IO_MODIFY', '20200413');
+    define('TORNELIB_IO_MODIFY', '20200419');
 }
 if (!defined('TORNELIB_IO_CLIENTNAME')) {
     define('TORNELIB_IO_CLIENTNAME', 'MODULE_IO');

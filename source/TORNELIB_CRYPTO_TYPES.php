@@ -2,6 +2,11 @@
 
 namespace TorneLIB;
 
+/**
+ * Class TORNELIB_CRYPTO_TYPES
+ * @package TorneLIB
+ * @deprecated
+ */
 abstract class TORNELIB_CRYPTO_TYPES
 {
     const TYPE_NONE = 0;
