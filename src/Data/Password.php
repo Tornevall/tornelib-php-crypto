@@ -1,8 +1,35 @@
 <?php
-
+/**
+ * Copyright 2020 Tomas Tornevall & Tornevall Networks
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * @package TorneLIB
+ * @version 6.1.0
+ * @since 6.0
+ */
 
 namespace TorneLIB\Data;
 
+/**
+ * Class Password Password generating library.
+ *
+ * Note: One big difference to the v6.0 release of the "keymaker" is that this tool generates
+ * password strings that is based on bitmasks.
+ *
+ * @package TorneLIB\Data
+ * @version 6.1.0
+ */
 class Password
 {
     const COMPLEX_UPPER = 1;
@@ -77,7 +104,7 @@ class Password
     /**
      * @param int $complexity
      * @return mixed
-     * @throws Exception
+     * @throws \Exception
      * @since 6.1.0
      */
     public function getCharacterList($complexity)
@@ -119,7 +146,7 @@ class Password
      * @param bool $ambigous
      * @param bool $antiDouble
      * @return mixed
-     * @throws Exception
+     * @throws \Exception
      * @since 6.0.4
      */
     private function getRandomCharacterFromArray(
@@ -173,7 +200,7 @@ class Password
      * @param bool $ambigous
      * @param bool $antiDouble
      * @return mixed|string
-     * @throws Exception
+     * @throws \Exception
      * @since 6.0.4
      */
     private function getCharacterFromComplexity(
@@ -196,7 +223,7 @@ class Password
      * @param bool $ambigous Exclude what we see as ambigous characters (this has no effect in complexity > 4)
      * @param bool $antiDouble Never use same character twice.
      * @return string
-     * @throws Exception
+     * @throws \Exception
      * @since 6.0.4
      */
     public function mkpass(
