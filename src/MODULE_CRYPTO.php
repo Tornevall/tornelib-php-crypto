@@ -32,11 +32,11 @@ use TorneLIB\Data\Crypto;
  */
 class MODULE_CRYPTO
 {
-    private $realCrypto;
+    private $CRYPTO;
 
     public function __construct()
     {
-        $this->realCrypto = new Crypto();
+        $this->CRYPTO = new Crypto();
 
         return $this;
     }
@@ -49,6 +49,6 @@ class MODULE_CRYPTO
      */
     public function __call($name, $arguments)
     {
-        return call_user_func_array([$this->realCrypto, $name], $arguments);
+        return call_user_func_array([$this->CRYPTO, $name], $arguments);
     }
 }
