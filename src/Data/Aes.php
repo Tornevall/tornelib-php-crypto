@@ -15,7 +15,7 @@
  * limitations under the License.
  *
  * @package TorneLIB
- * @version 6.1.0
+ * @version 6.1.1
  * @since 6.0
  */
 
@@ -31,13 +31,18 @@ use TorneLIB\Utils\Security;
  * Class Aes OpenSSL encryption library with mcrypt failover for obsolete systems.
  *
  * @package TorneLIB\Data
- * @version 6.1.0
+ * @version 6.1.1
  * @since 6.1.0
  */
 class Aes
 {
+    /** @var int Available driver: None. */
     const CRYPTO_UNAVAILABLE = 0;
+
+    /** @var int Available driver: OpenSSL. */
     const CRYPTO_SSL = 1;
+
+    /** @var int Available driver: mcrypt (deprecated driver from PHP 7.1). */
     const CRYPTO_MCRYPT = 2;
 
     /**
@@ -48,9 +53,21 @@ class Aes
 
     /**
      * @var string
+     * @since 6.1.1
+     */
+    private $aesKeyRaw;
+
+    /**
+     * @var string
      * @since 6.1.0
      */
     private $aesIv;
+
+    /**
+     * @var string
+     * @since 6.1.1
+     */
+    private $aesIvRaw;
 
     /**
      * @var int
@@ -74,12 +91,19 @@ class Aes
     private $sslCipherType;
 
     /**
+     * @var bool
+     */
+    private $mcryptOverSsl = false;
+
+    /**
      * Aes constructor.
      * @since 6.1.0
      */
     public function __construct()
     {
         $this->setCryptoLib();
+
+        return $this;
     }
 
     /**
@@ -92,18 +116,20 @@ class Aes
     {
         $this->cryptoLib = Aes::CRYPTO_UNAVAILABLE;
 
-        if (function_exists('mcrypt_encrypt')) {
+        if (Security::getCurrentFunctionState('mcrypt_encrypt', false)) {
             $this->canMcrypt = true;
         }
 
         // Depend on openssl. If not there, fallback to mcrypt.
-        if (Security::getCurrentFunctionState('openssl_encrypt', false)) {
+        if (Security::getCurrentFunctionState('openssl_encrypt', false) &&
+            !$this->getMcryptOverSsl()
+        ) {
             $this->cryptoLib = Aes::CRYPTO_SSL;
             $this->setCipher();
         } elseif (Security::getCurrentFunctionState('mcrypt_encrypt', false)) {
             // If mcrypt is present but platform is PHP 7.1+ we won't proceed as there are
             // no proper encryption available.
-            if (version_compare(PHP_VERSION, '7.1', '>=')) {
+            if (version_compare(PHP_VERSION, '7.1', '<=')) {
                 $this->cryptoLib = Aes::CRYPTO_MCRYPT;
                 $this->canMcrypt = true;
             } else {
@@ -135,12 +161,16 @@ class Aes
      */
     public function setAesKeys($key, $iv, $method = 'sha1')
     {
+        $this->aesKeyRaw = $key;
+        $this->aesIvRaw = $iv;
+
         // Check if a testflag is available, to switch over to mcrypt.
         // If openssl is absent, switch over to mcrypt keying (md5 instead of sha1) automatically.
         if (
             (
                 Flag::getFlag('mcrypt') ||
-                !Security::getCurrentFunctionState('openssl_encrypt', false)
+                !Security::getCurrentFunctionState('openssl_encrypt', false) ||
+                $this->getMcryptOverSsl()
             ) &&
             $method === 'sha1') {
             $method = 'md5';
@@ -178,6 +208,7 @@ class Aes
                 }
             }
         }
+
         return $this->aesIv;
     }
 
@@ -192,11 +223,14 @@ class Aes
 
     /**
      * @param int $compressionLevel
+     * @return Aes
      * @since 6.1.0
      */
     public function setCompressionLevel($compressionLevel = 9)
     {
         $this->compressionLevel = $compressionLevel;
+
+        return $this;
     }
 
     /**
@@ -342,6 +376,7 @@ class Aes
      * @param $dataToDecrypt
      * @param $asBase64
      * @return false|string
+     * @throws ExceptionHandler
      * @since 6.1.0
      */
     public function getDecryptedSsl($dataToDecrypt, $asBase64)
@@ -350,15 +385,13 @@ class Aes
             $dataToDecrypt = (new Strings())->base64urlDecode($dataToDecrypt);
         }
 
-        $return = openssl_decrypt(
+        return openssl_decrypt(
             $dataToDecrypt,
             $this->getSslCipherType(),
             $this->getAesKey(),
             OPENSSL_RAW_DATA,
             $this->getAesIv(true)
         );
-
-        return $return;
     }
 
     /**
@@ -397,5 +430,31 @@ class Aes
         }
 
         return (string)$return;
+    }
+
+    /**
+     * @return bool
+     * @since 6.1.1
+     */
+    public function getMcryptOverSsl()
+    {
+        return $this->mcryptOverSsl;
+    }
+
+    /**
+     * @param bool $mcryptOverSsl
+     * @return Aes
+     * @throws ExceptionHandler
+     * @since 6.1.1
+     */
+    public function setMcryptOverSsl($mcryptOverSsl = false)
+    {
+        $this->mcryptOverSsl = $mcryptOverSsl;
+
+        // Rerun procedure.
+        $this->setCryptoLib();
+        $this->setAesKeys($this->aesKeyRaw, $this->aesIvRaw);
+
+        return $this;
     }
 }

@@ -117,8 +117,10 @@ class cryptoTest extends TestCase
      */
     public function getEncryptedString()
     {
-        $encData = (new Crypto())
-            ->setAesKeys('MyKey', 'MyIV')
+        /** @var Aes $crypto */
+        $crypto = (new Crypto())
+            ->setAesKeys('MyKey', 'MyIV');
+        $encData = $crypto
             ->aesEncrypt('EncryptME');
 
         // First string is openssl encrypted.
@@ -183,5 +185,25 @@ class cryptoTest extends TestCase
                 'encryptThis'
             ) === 'aes-256-cbc'
         );
+    }
+
+    /**
+     * @test
+     * @throws ExceptionHandler
+     */
+    public function findingMcrypt()
+    {
+        /** @var Aes $crypto */
+        $crypto = new Crypto();
+        $crypto->setAesKeys('MyKey', 'MyIV');
+        $crypto->setMcryptOverSsl(true);
+
+        $encData = $crypto->aesEncrypt('EncryptME');
+        $findData = $crypto->getCipherTypeByString($encData, 'EncryptME');
+
+        // Note to self: For current version of crypto, openssl and mcrypt defaults to different
+        // encryption algorithms and types. By forcing mcrypt at this moment may break something.
+        // Also be aware of that if you run something older, this might also break communication.
+        static::assertTrue(empty($findData));
     }
 }
