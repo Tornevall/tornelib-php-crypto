@@ -24,10 +24,10 @@
 namespace TorneLIB;
 
 if (!defined('TORNELIB_IO_RELEASE')) {
-    define('TORNELIB_IO_RELEASE', '6.0.21');
+    define('TORNELIB_IO_RELEASE', '6.0.22');
 }
 if (!defined('TORNELIB_IO_MODIFY')) {
-    define('TORNELIB_IO_MODIFY', '20200419');
+    define('TORNELIB_IO_MODIFY', '20200427');
 }
 if (!defined('TORNELIB_IO_CLIENTNAME')) {
     define('TORNELIB_IO_CLIENTNAME', 'MODULE_IO');
@@ -764,6 +764,7 @@ if (!class_exists('MODULE_IO', IO_CLASS_EXISTS_AUTOLOAD) &&
          * @return array|mixed|object
          * @throws \Exception
          * @since 6.0.5
+         * @deprecated This might break stuff, so don't use it!
          */
         public function getFromYaml($yamlString = '', $getAssoc = true)
         {
@@ -783,7 +784,8 @@ if (!class_exists('MODULE_IO', IO_CLASS_EXISTS_AUTOLOAD) &&
                     return $this->arrayObjectToStdClass($extractYaml);
                 }
             } else {
-                throw new \Exception("yaml_parse not supported - ask your admin to install the driver", 404);
+                // Silently leave if there is no yaml_parse available. Noone cares anyway.
+                return null;
             }
         }
 

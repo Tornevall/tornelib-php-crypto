@@ -25,10 +25,10 @@
 namespace TorneLIB;
 
 if (!defined('TORNELIB_CRYPTO_RELEASE')) {
-    define('TORNELIB_CRYPTO_RELEASE', '6.0.25');
+    define('TORNELIB_CRYPTO_RELEASE', '6.0.26');
 }
 if (!defined('TORNELIB_CRYPTO_MODIFY')) {
-    define('TORNELIB_CRYPTO_MODIFY', '20200419');
+    define('TORNELIB_CRYPTO_MODIFY', '20200427');
 }
 if (!defined('TORNELIB_CRYPTO_CLIENTNAME')) {
     define('TORNELIB_CRYPTO_CLIENTNAME', 'MODULE_CRYPTO');
