@@ -25,10 +25,10 @@
 namespace TorneLIB;
 
 if (!defined('TORNELIB_CRYPTO_RELEASE')) {
-    define('TORNELIB_CRYPTO_RELEASE', '6.0.26');
+    define('TORNELIB_CRYPTO_RELEASE', '6.0.27');
 }
 if (!defined('TORNELIB_CRYPTO_MODIFY')) {
-    define('TORNELIB_CRYPTO_MODIFY', '20200427');
+    define('TORNELIB_CRYPTO_MODIFY', '20200514');
 }
 if (!defined('TORNELIB_CRYPTO_CLIENTNAME')) {
     define('TORNELIB_CRYPTO_CLIENTNAME', 'MODULE_CRYPTO');
@@ -59,11 +59,8 @@ if (defined('TORNELIB_CRYPTO_REQUIRE')) {
     }
 }
 
-if (!class_exists('MODULE_CRYPTO', CRYPTO_CLASS_EXISTS_AUTOLOAD) &&
-    !class_exists(
-        'TorneLIB\MODULE_CRYPTO',
-        CRYPTO_CLASS_EXISTS_AUTOLOAD
-    ) && defined('TORNELIB_CRYPTO_ALLOW_AUTOLOAD') && TORNELIB_CRYPTO_ALLOW_AUTOLOAD === true) {
+if (!class_exists('MODULE_CRYPTO', CRYPTO_CLASS_EXISTS_AUTOLOAD) && !class_exists('TorneLIB\MODULE_CRYPTO',
+        CRYPTO_CLASS_EXISTS_AUTOLOAD) && defined('TORNELIB_CRYPTO_ALLOW_AUTOLOAD') && TORNELIB_CRYPTO_ALLOW_AUTOLOAD === true) {
     /**
      * Class TorneLIB_Crypto
      * @deprecated Not supported by netcurl 6.1 - maintenance only - soon updating to 6.1

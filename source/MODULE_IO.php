@@ -24,10 +24,10 @@
 namespace TorneLIB;
 
 if (!defined('TORNELIB_IO_RELEASE')) {
-    define('TORNELIB_IO_RELEASE', '6.0.22');
+    define('TORNELIB_IO_RELEASE', '6.0.23');
 }
 if (!defined('TORNELIB_IO_MODIFY')) {
-    define('TORNELIB_IO_MODIFY', '20200427');
+    define('TORNELIB_IO_MODIFY', '20200514');
 }
 if (!defined('TORNELIB_IO_CLIENTNAME')) {
     define('TORNELIB_IO_CLIENTNAME', 'MODULE_IO');
