@@ -12,7 +12,6 @@ use TorneLIB\Utils\Security;
  * Class Aes OpenSSL encryption library with mcrypt failover for obsolete systems.
  *
  * @package TorneLIB\Data
- * @version 6.1.1
  * @since 6.1.0
  */
 class Aes

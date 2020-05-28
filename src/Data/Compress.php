@@ -11,7 +11,6 @@ use TorneLIB\Utils\Security;
  * Class Compress Compression methods.
  *
  * @package TorneLIB\Data
- * @version 6.1.0
  * @since 6.1.0 Class is new, compression methods did however exist in v6.0 internally.
  */
 class Compress

@@ -9,7 +9,6 @@ use TorneLIB\Exception\ExceptionHandler;
  * Class Crypto Default encryption failover module.
  *
  * @package TorneLIB\Data
- * @version 6.1.0
  */
 class Crypto
 {

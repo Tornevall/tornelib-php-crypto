@@ -11,7 +11,7 @@ use TorneLIB\Data\Crypto;
  *
  * @package TorneLIB
  * @version 6.1.0
- * @since 6.0
+ * @since 6.0.0
  * @deprecated Use v6.1 classes instead!!
  */
 class MODULE_CRYPTO
