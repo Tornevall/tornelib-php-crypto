@@ -77,6 +77,7 @@ class Aes
 
     /**
      * Aes constructor.
+     * @throws ExceptionHandler
      * @since 6.1.0
      */
     public function __construct()
@@ -147,8 +148,7 @@ class Aes
         // Check if a testflag is available, to switch over to mcrypt.
         // If openssl is absent, switch over to mcrypt keying (md5 instead of sha1) automatically.
         if (
-            (
-                Flag::getFlag('mcrypt') ||
+            (Flag::getFlag('mcrypt') ||
                 !Security::getCurrentFunctionState('openssl_encrypt', false) ||
                 $this->getMcryptOverSsl()
             ) &&
