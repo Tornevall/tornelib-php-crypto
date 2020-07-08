@@ -144,7 +144,8 @@ class cryptoTest extends TestCase
             ->aesEncrypt('EncryptME');
 
         static::assertTrue(
-            $encData === '2qKNH_JrlZHyq-nJFaFR5gC2J5iFD7rFFts6Ikr7IMY'
+            $encData === '2qKNH_JrlZHyq-nJFaFR5gC2J5iFD7rFFts6Ikr7IMY' ||
+            $encData === 'x8NUlCoEg_OAdijHvPBj_g'
         );
 
         Flag::deleteFlag('mcrypt');
@@ -179,11 +180,13 @@ class cryptoTest extends TestCase
             'encryptThis'
         );
 
+        $typeByString = $crypt->getCipherTypeByString(
+            $encrypted,
+            'encryptThis'
+        );
+
         static::assertTrue(
-            $crypt->getCipherTypeByString(
-                $encrypted,
-                'encryptThis'
-            ) === 'aes-256-cbc'
+            ($typeByString === 'aes-256-cbc' ? true : false)
         );
     }
 
