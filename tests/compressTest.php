@@ -13,7 +13,7 @@ class compressTest extends TestCase
     /**
      * @test
      */
-    public function testGetGzEncode()
+    public function getGzEncode()
     {
         static::assertNotEmpty(
             (new Compress())->getGzEncode('Hello World')
@@ -24,22 +24,10 @@ class compressTest extends TestCase
      * @test
      * @throws Exception
      */
-    public function testGetGzDecode()
+    public function getGzDecode()
     {
-        static::assertTrue(
-            (new Compress())->getGzDecode((new Compress())->getGzEncode('Hello World')) === 'Hello World'
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function testGetBzDecode()
-    {
-        static::assertTrue(
-            (new Compress())->getBzDecode(
-                (new Compress())->getBzEncode('Hello world')
-            ) === 'Hello world'
+        static::assertSame(
+            (new Compress())->getGzDecode((new Compress())->getGzEncode('Hello World')), 'Hello World'
         );
     }
 
@@ -47,18 +35,44 @@ class compressTest extends TestCase
      * @test
      * @throws Exception
      */
-    public function testGetBzEncode()
+    public function getBzDecode()
     {
-        static::assertNotEmpty(
-            (new Compress())->getBzEncode('Hello World')
+        if ((new Utils\Security())->getFunctionState('bzcompress', false)) {
+            static::assertSame(
+                (new Compress())->getBzDecode(
+                    (new Compress())->getBzEncode('Hello world')
+                ), 'Hello world'
+            );
+            return;
+        }
+        static::markTestSkipped(
+            sprintf('%s: bzcompress is missing in this platform.', __FUNCTION__)
+        );
+    }
+
+    /**
+     * @test
+     * @throws Exception
+     */
+    public function getBzEncode()
+    {
+        if ((new Utils\Security())->getFunctionState('bzcompress', false)) {
+            static::assertNotEmpty(
+                (new Compress())->getBzEncode('Hello World')
+            );
+            return;
+        }
+        static::markTestSkipped(
+            sprintf('%s: bzcompress is missing in this platform.', __FUNCTION__)
         );
     }
 
     /**
      * @test
      */
-    public function testOldGetGz()
+    public function getGzEncodeOld()
     {
+        /** @noinspection PhpUndefinedMethodInspection */
         static::assertNotEmpty(
             (new Compress())->base64_gzencode('Hello World')
         );

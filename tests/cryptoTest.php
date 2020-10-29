@@ -106,8 +106,8 @@ class cryptoTest extends TestCase
      */
     public function getCryptoLib()
     {
-        static::assertTrue(
-            (new Aes())->getCryptoLib() === Crypto::CRYPTO_SSL
+        static::assertSame(
+            (new Aes())->getCryptoLib(), Crypto::CRYPTO_SSL
         );
     }
 
