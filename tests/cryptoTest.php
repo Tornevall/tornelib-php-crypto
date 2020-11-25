@@ -153,7 +153,6 @@ class cryptoTest extends TestCase
 
     /**
      * @test
-     * @throws ExceptionHandler
      */
     public function getDecryptedString()
     {
@@ -165,8 +164,8 @@ class cryptoTest extends TestCase
             ->setAesKeys('MyKey', 'MyIV')
             ->aesDecrypt($encData);
 
-        static::assertTrue(
-            $decData === 'EncryptME'
+        static::assertSame(
+            $decData, 'EncryptME'
         );
     }
 
@@ -208,5 +207,14 @@ class cryptoTest extends TestCase
         // encryption algorithms and types. By forcing mcrypt at this moment may break something.
         // Also be aware of that if you run something older, this might also break communication.
         static::assertTrue(empty($findData));
+    }
+
+    /**
+     * @test
+     */
+    public function getPrivPub() {
+        if (!file_exists(__DIR__ . '/ExtendKeys/private.key') && file(__DIR__ . '/ExtendKeys/public.key')) {
+            static::markTestSkipped('No keys in ExtendKeys');
+        }
     }
 }

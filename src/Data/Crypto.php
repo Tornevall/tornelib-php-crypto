@@ -31,6 +31,18 @@ class Crypto
     const CRYPTO_MCRYPT = 2;
 
     /**
+     * @var string
+     * @since 6.1.4
+     */
+    private $pubKey;
+
+    /**
+     * @var string
+     * @since 6.1.4
+     */
+    private $privKey;
+
+    /**
      * @var Password
      */
     private $password;
@@ -54,6 +66,48 @@ class Crypto
         $this->password = new Password();
         $this->aes = new Aes();
         $this->compress = new Compress();
+    }
+
+    /**
+     * @param $publicKey
+     * @return Crypto
+     * @since 6.1.4
+     */
+    public function setPublicKey($publicKey)
+    {
+        $this->pubKey = $publicKey;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     * @since 6.1.4
+     */
+    public function getPublicKey()
+    {
+        return $this->pubKey;
+    }
+
+    /**
+     * @param $privateKey
+     * @return Crypto
+     * @since 6.1.4
+     */
+    public function setPrivateKey($privateKey)
+    {
+        $this->privKey = $privateKey;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     * @since 6.1.4
+     */
+    public function getPrivateKey()
+    {
+        return $this->privKey;
     }
 
     /**
