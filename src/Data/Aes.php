@@ -83,8 +83,6 @@ class Aes
     public function __construct()
     {
         $this->setCryptoLib();
-
-        return $this;
     }
 
     /**
@@ -125,11 +123,51 @@ class Aes
     }
 
     /**
-     * @return int
+     * @return bool
+     * @since 6.1.1
      */
-    public function getCryptoLib()
+    public function getMcryptOverSsl()
     {
-        return $this->cryptoLib;
+        return $this->mcryptOverSsl;
+    }
+
+    /**
+     * @param bool $mcryptOverSsl
+     * @return Aes
+     * @throws ExceptionHandler
+     * @since 6.1.1
+     */
+    public function setMcryptOverSsl($mcryptOverSsl = false)
+    {
+        $this->mcryptOverSsl = $mcryptOverSsl;
+
+        // Rerun procedure.
+        $this->setCryptoLib();
+        $this->setAesKeys($this->aesKeyRaw, $this->aesIvRaw);
+
+        return $this;
+    }
+
+    /**
+     * @param string $cipherConstant
+     * @return Aes
+     */
+    public function setCipher($cipherConstant = 'AES-256-CBC')
+    {
+        $cipherMethods = openssl_get_cipher_methods();
+
+        if (is_array($cipherMethods) &&
+            in_array(strtolower($cipherConstant), array_map('strtolower', $cipherMethods), true)
+        ) {
+            $this->sslCipherType = $cipherConstant;
+
+            return $this;
+        }
+
+        throw new Exception(
+            'Cipher does not exists in this openssl module',
+            Constants::LIB_SSL_CIPHER_UNAVAILABLE
+        );
     }
 
     /**
@@ -171,37 +209,6 @@ class Aes
     }
 
     /**
-     * @param bool $adjustLength
-     * @return mixed
-     * @throws ExceptionHandler
-     * @since 6.0.15
-     */
-    public function getAesIv($adjustLength = true)
-    {
-        if (Security::getCurrentFunctionState('openssl_cipher_iv_length', false)) {
-            if ($adjustLength) {
-                $this->aesIvLength = openssl_cipher_iv_length($this->getSslCipherType());
-                if ((int)$this->aesIvLength >= 0) {
-                    if (strlen($this->aesIv) > $this->aesIvLength) {
-                        $this->aesIv = substr($this->aesIv, 0, $this->aesIvLength);
-                    }
-                }
-            }
-        }
-
-        return $this->aesIv;
-    }
-
-    /**
-     * @return mixed
-     * @since 6.0.15
-     */
-    public function getAesKey()
-    {
-        return $this->aesKey;
-    }
-
-    /**
      * @param int $compressionLevel
      * @return Aes
      * @since 6.1.0
@@ -221,37 +228,9 @@ class Aes
         return $this->aesIvLength;
     }
 
-    /**
-     * @param string $cipherConstant
-     * @return Aes
-     */
-    public function setCipher($cipherConstant = 'AES-256-CBC')
-    {
-        $cipherMethods = openssl_get_cipher_methods();
-
-        if (
-            is_array($cipherMethods) &&
-            in_array(
-                strtolower($cipherConstant),
-                array_map('strtolower', $cipherMethods)
-            )
-        ) {
-            $this->sslCipherType = $cipherConstant;
-
-            return $this;
-        }
-
-        throw new Exception(
-            'Cipher does not exists in this openssl module',
-            Constants::LIB_SSL_CIPHER_UNAVAILABLE
-        );
-    }
-
     public function aesEncrypt($dataToEncrypt = '', $asBase64 = true, $forceUtf8 = true)
     {
-        if (
-            (
-                $this->getCryptoLib() === self::CRYPTO_MCRYPT ||
+        if (($this->getCryptoLib() === self::CRYPTO_MCRYPT ||
                 Flag::getFlag('mcrypt')
             ) &&
             $this->canMcrypt
@@ -270,6 +249,82 @@ class Aes
         }
 
         return $return;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCryptoLib()
+    {
+        return $this->cryptoLib;
+    }
+
+    /**
+     * Statically encrypting with RIJNDAEL_256.
+     *
+     * @param string $dataToEncrypt
+     * @param bool $asBase64
+     * @param bool $forceUtf8
+     * @return string
+     * @throws ExceptionHandler
+     */
+    private function getEncryptedMcrypt(
+        $dataToEncrypt = '',
+        $asBase64 = true,
+        $forceUtf8 = true
+    ) {
+        $return = mcrypt_encrypt(
+            MCRYPT_RIJNDAEL_256,
+            $this->getAesKey(),
+            $forceUtf8 ? utf8_encode($dataToEncrypt) : $dataToEncrypt,
+            MCRYPT_MODE_CBC,
+            $this->getAesIv(false)
+        );
+
+        if ($asBase64) {
+            $return = (new Strings())->base64urlEncode($return);
+        }
+
+        return $return;
+    }
+
+    /**
+     * @return mixed
+     * @since 6.0.15
+     */
+    public function getAesKey()
+    {
+        return $this->aesKey;
+    }
+
+    /**
+     * @param bool $adjustLength
+     * @return mixed
+     * @throws ExceptionHandler
+     * @since 6.0.15
+     */
+    public function getAesIv($adjustLength = true)
+    {
+        if (Security::getCurrentFunctionState('openssl_cipher_iv_length', false)) {
+            if ($adjustLength) {
+                $this->aesIvLength = openssl_cipher_iv_length($this->getSslCipherType());
+                if ($this->aesIvLength >= 0) {
+                    if (strlen($this->aesIv) > $this->aesIvLength) {
+                        $this->aesIv = substr($this->aesIv, 0, $this->aesIvLength);
+                    }
+                }
+            }
+        }
+
+        return $this->aesIv;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSslCipherType()
+    {
+        return $this->sslCipherType;
     }
 
     /**
@@ -333,35 +388,6 @@ class Aes
     }
 
     /**
-     * Statically encrypting with RIJNDAEL_256.
-     *
-     * @param string $dataToEncrypt
-     * @param bool $asBase64
-     * @param bool $forceUtf8
-     * @return string
-     * @throws ExceptionHandler
-     */
-    private function getEncryptedMcrypt(
-        $dataToEncrypt = '',
-        $asBase64 = true,
-        $forceUtf8 = true
-    ) {
-        $return = mcrypt_encrypt(
-            MCRYPT_RIJNDAEL_256,
-            $this->getAesKey(),
-            $forceUtf8 ? utf8_encode($dataToEncrypt) : $dataToEncrypt,
-            MCRYPT_MODE_CBC,
-            $this->getAesIv(false)
-        );
-
-        if ($asBase64) {
-            $return = (new Strings())->base64urlEncode($return);
-        }
-
-        return $return;
-    }
-
-    /**
      * @param $dataToDecrypt
      * @param bool $asBase64
      * @return false|string
@@ -403,14 +429,6 @@ class Aes
     }
 
     /**
-     * @return mixed
-     */
-    public function getSslCipherType()
-    {
-        return $this->sslCipherType;
-    }
-
-    /**
      * @param $encrypted
      * @param $decrypted
      * @return string
@@ -438,31 +456,5 @@ class Aes
         }
 
         return (string)$return;
-    }
-
-    /**
-     * @return bool
-     * @since 6.1.1
-     */
-    public function getMcryptOverSsl()
-    {
-        return $this->mcryptOverSsl;
-    }
-
-    /**
-     * @param bool $mcryptOverSsl
-     * @return Aes
-     * @throws ExceptionHandler
-     * @since 6.1.1
-     */
-    public function setMcryptOverSsl($mcryptOverSsl = false)
-    {
-        $this->mcryptOverSsl = $mcryptOverSsl;
-
-        // Rerun procedure.
-        $this->setCryptoLib();
-        $this->setAesKeys($this->aesKeyRaw, $this->aesIvRaw);
-
-        return $this;
     }
 }
