@@ -30,6 +30,8 @@ class Crypto
     /** @var int CRYPTO_MCRYPT When SSL is not available, but mcrypt is, this is chosen. */
     const CRYPTO_MCRYPT = 2;
 
+    private static $_internal;
+
     /**
      * @var string
      * @since 6.1.4
@@ -69,6 +71,50 @@ class Crypto
     }
 
     /**
+     * @param $privateKey
+     * @return static
+     * @since 6.1.4
+     */
+    public static function _setPrivateKey($privateKey)
+    {
+        return self::_getCrypto()->setPrivateKey($privateKey);
+    }
+
+    /**
+     * @param $privateKey
+     * @return Crypto
+     * @since 6.1.4
+     */
+    public function setPrivateKey($privateKey)
+    {
+        $this->privKey = $privateKey;
+
+        return $this;
+    }
+
+    /**
+     * @return Crypto
+     */
+    private static function _getCrypto()
+    {
+        if (empty(self::$_internal)) {
+            self::$_internal = new Crypto();
+        }
+
+        return self::$_internal;
+    }
+
+    /**
+     * @param $publicKey
+     * @return static
+     * @since 6.1.4
+     */
+    public static function _setPublicKey($publicKey)
+    {
+        return self::_getCrypto()->setPublicKey($publicKey);
+    }
+
+    /**
      * @param $publicKey
      * @return Crypto
      * @since 6.1.4
@@ -90,15 +136,19 @@ class Crypto
     }
 
     /**
-     * @param $privateKey
-     * @return Crypto
+     * @return string
      * @since 6.1.4
      */
-    public function setPrivateKey($privateKey)
-    {
-        $this->privKey = $privateKey;
+    public static function _getPublicKey() {
+        return self::_getCrypto()->getPublicKey();
+    }
 
-        return $this;
+    /**
+     * @return string
+     * @since 6.1.4
+     */
+    public static function _getPrivateKey() {
+        return self::_getCrypto()->getPrivateKey();
     }
 
     /**

@@ -208,13 +208,4 @@ class cryptoTest extends TestCase
         // Also be aware of that if you run something older, this might also break communication.
         static::assertTrue(empty($findData));
     }
-
-    /**
-     * @test
-     */
-    public function getPrivPub() {
-        if (!file_exists(__DIR__ . '/ExtendKeys/private.key') && file(__DIR__ . '/ExtendKeys/public.key')) {
-            static::markTestSkipped('No keys in ExtendKeys');
-        }
-    }
 }
