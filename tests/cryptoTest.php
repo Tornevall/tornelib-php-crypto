@@ -5,6 +5,7 @@ use TorneLIB\Config\Flag;
 use TorneLIB\Data\Aes;
 use TorneLIB\Data\Crypto;
 use TorneLIB\Data\Password;
+use TorneLIB\Exception\Constants;
 use TorneLIB\Exception\ExceptionHandler;
 
 require_once(__DIR__ . '/../vendor/autoload.php');
@@ -198,7 +199,16 @@ class cryptoTest extends TestCase
         /** @var Aes $crypto */
         $crypto = new Crypto();
         $crypto->setAesKeys('MyKey', 'MyIV');
-        $crypto->setMcryptOverSsl(true);
+        try {
+            $crypto->setMcryptOverSsl(true);
+        } catch (\Exception $e) {
+            if ($e->getCode() === Constants::LIB_METHOD_OR_LIBRARY_UNAVAILABLE) {
+                static::markTestSkipped(
+                    sprintf('mcrypt is not available in PHP %s', PHP_VERSION)
+                );
+                return;
+            }
+        }
 
         $encData = $crypto->aesEncrypt('EncryptME');
         $findData = $crypto->getCipherTypeByString($encData, 'EncryptME');
