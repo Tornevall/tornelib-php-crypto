@@ -9,6 +9,7 @@ use TorneLIB\Exception\ExceptionHandler;
  * Class Crypto Default encryption failover module.
  *
  * @package TorneLIB\Data
+ * @version 6.1.4
  */
 class Crypto
 {
@@ -130,6 +131,15 @@ class Crypto
      * @return string
      * @since 6.1.4
      */
+    public static function _getPublicKey()
+    {
+        return self::_getCrypto()->getPublicKey();
+    }
+
+    /**
+     * @return string
+     * @since 6.1.4
+     */
     public function getPublicKey()
     {
         return $this->pubKey;
@@ -139,15 +149,8 @@ class Crypto
      * @return string
      * @since 6.1.4
      */
-    public static function _getPublicKey() {
-        return self::_getCrypto()->getPublicKey();
-    }
-
-    /**
-     * @return string
-     * @since 6.1.4
-     */
-    public static function _getPrivateKey() {
+    public static function _getPrivateKey()
+    {
         return self::_getCrypto()->getPrivateKey();
     }
 
@@ -165,7 +168,7 @@ class Crypto
      * @param $arguments
      * @return mixed
      * @throws ExceptionHandler
-     * @snice 6.1.0
+     * @since 6.1.0
      */
     public function __call($name, $arguments)
     {

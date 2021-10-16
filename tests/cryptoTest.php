@@ -7,6 +7,7 @@ use TorneLIB\Data\Crypto;
 use TorneLIB\Data\Password;
 use TorneLIB\Exception\Constants;
 use TorneLIB\Exception\ExceptionHandler;
+use TorneLIB\MODULE_CRYPTO;
 
 require_once(__DIR__ . '/../vendor/autoload.php');
 
@@ -29,6 +30,24 @@ class cryptoTest extends TestCase
         static::assertTrue(
             $genUpper === strtoupper($genUpper) &&
             strlen(16)
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function getMkPassLong()
+    {
+        $getLength = 255;
+        $pwClass = new Password();
+        $pwClassPassword = $pwClass->mkpass(Password::COMPLEX_UPPER + Password::COMPLEX_LOWER, $getLength);
+
+        $modCryptoClass = new MODULE_CRYPTO();
+        $cryptoClassPw = $modCryptoClass->mkpass(Password::COMPLEX_UPPER + Password::COMPLEX_LOWER, $getLength);
+
+        static::assertTrue(
+            strlen($pwClassPassword) === $getLength &&
+            strlen($cryptoClassPw) === $getLength
         );
     }
 
@@ -201,7 +220,7 @@ class cryptoTest extends TestCase
         $crypto->setAesKeys('MyKey', 'MyIV');
         try {
             $crypto->setMcryptOverSsl(true);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             if ($e->getCode() === Constants::LIB_METHOD_OR_LIBRARY_UNAVAILABLE) {
                 static::markTestSkipped(
                     sprintf('mcrypt is not available in PHP %s', PHP_VERSION)
@@ -217,5 +236,21 @@ class cryptoTest extends TestCase
         // encryption algorithms and types. By forcing mcrypt at this moment may break something.
         // Also be aware of that if you run something older, this might also break communication.
         static::assertTrue(empty($findData));
+    }
+
+    /**
+     * @test
+     */
+    public function canCrypto()
+    {
+        // For the moment both Aes and Crypto has the Crypto-available constants, but
+        // all CRYPTO_UNAVAILABLE should be returned from Crypto::class.
+        $aes = new Aes();
+        $crypto = new Crypto();
+
+        static::assertTrue(
+            $aes->canCrypto() !== Crypto::CRYPTO_UNAVAILABLE &&
+            $crypto->canCrypto() !== Crypto::CRYPTO_UNAVAILABLE
+        );
     }
 }

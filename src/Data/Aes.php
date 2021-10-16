@@ -2,6 +2,7 @@
 
 namespace TorneLIB\Data;
 
+use Exception;
 use TorneLIB\Config\Flag;
 use TorneLIB\Exception\Constants;
 use TorneLIB\Exception\ExceptionHandler;
@@ -77,6 +78,7 @@ class Aes
 
     /**
      * Aes constructor.
+     *
      * @throws ExceptionHandler
      * @since 6.1.0
      */
@@ -86,7 +88,7 @@ class Aes
     }
 
     /**
-     * openssl has higher priority.
+     * Openssl has higher priority.
      *
      * @return $this
      * @throws ExceptionHandler
@@ -108,7 +110,7 @@ class Aes
         } elseif (Security::getCurrentFunctionState('mcrypt_encrypt', false)) {
             // If mcrypt is present but platform is PHP 7.1+ we won't proceed as there are
             // no proper encryption available.
-            if (version_compare(PHP_VERSION, '7.1', '<=')) {
+            if (PHP_VERSION_ID <= 70100) {
                 $this->cryptoLib = Aes::CRYPTO_MCRYPT;
                 $this->canMcrypt = true;
             } else {
@@ -118,6 +120,8 @@ class Aes
                 );
             }
         }
+
+        $this->getCryptoException();
 
         return $this;
     }
@@ -151,6 +155,7 @@ class Aes
     /**
      * @param string $cipherConstant
      * @return Aes
+     * @throws Exception
      */
     public function setCipher($cipherConstant = 'AES-256-CBC')
     {
@@ -168,6 +173,29 @@ class Aes
             'Cipher does not exists in this openssl module',
             Constants::LIB_SSL_CIPHER_UNAVAILABLE
         );
+    }
+
+    /**
+     * @throws Exception
+     * @since 6.1.4
+     */
+    private function getCryptoException()
+    {
+        if (!$this->canCrypto()) {
+            throw new Exception(
+                'There is currently no encryption library available!',
+                Constants::LIB_METHOD_OR_LIBRARY_UNAVAILABLE
+            );
+        }
+    }
+
+    /**
+     * @return mixed
+     * @since 6.1.4
+     */
+    public function canCrypto()
+    {
+        return $this->cryptoLib !== Crypto::CRYPTO_UNAVAILABLE ? true : false;
     }
 
     /**
@@ -228,8 +256,17 @@ class Aes
         return $this->aesIvLength;
     }
 
+    /**
+     * @param string $dataToEncrypt
+     * @param bool $asBase64
+     * @param bool $forceUtf8
+     * @return false|string
+     * @throws ExceptionHandler
+     */
     public function aesEncrypt($dataToEncrypt = '', $asBase64 = true, $forceUtf8 = true)
     {
+        $this->getCryptoException();
+
         if (($this->getCryptoLib() === self::CRYPTO_MCRYPT ||
                 Flag::getFlag('mcrypt')
             ) &&
@@ -353,7 +390,7 @@ class Aes
                 OPENSSL_RAW_DATA,
                 $this->getAesIv(true)
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             if (preg_match('/AEAD/', $e->getMessage()) && $e->getCode() === 2) {
                 $return = $this->getEncryptedSslTag($dataToEncrypt, $forceUtf8);
             } else {
@@ -396,6 +433,8 @@ class Aes
      */
     public function aesDecrypt($dataToDecrypt, $asBase64 = true)
     {
+        $this->getCryptoException();
+
         if (empty($this->aesKey) || empty($this->aesIv)) {
             throw new ExceptionHandler(
                 'You need to set KEY and IV to encrypt content.',
