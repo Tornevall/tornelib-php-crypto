@@ -253,4 +253,15 @@ class cryptoTest extends TestCase
             $crypto->canCrypto() !== Crypto::CRYPTO_UNAVAILABLE
         );
     }
+
+    /**
+     * @test
+     * @throws ExceptionHandler
+     */
+    public function secrets()
+    {
+        $aes = new Aes();
+        $aes->setAesKeys('secret', '');
+        static::assertTrue(strlen($aes->aesEncrypt('Test Test Test')) > 10);
+    }
 }
