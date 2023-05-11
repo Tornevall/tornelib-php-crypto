@@ -116,7 +116,7 @@ class Password
      * Returns a random character based on complexity selection.
      *
      * @param int $complexity
-     * @param bool $ambigous
+     * @param bool $ambiguous
      * @param bool $antiDouble
      * @return mixed|string
      * @throws Exception
@@ -124,14 +124,14 @@ class Password
      */
     private function getCharacterFromComplexity(
         $complexity,
-        $ambigous = false,
+        $ambiguous = false,
         $antiDouble = false
     ) {
         if ($complexity & self::COMPLEX_BINARY && $this->characterArray[$complexity]) {
             $this->getBinaryTable();
         }
 
-        return $this->getRandomCharacterFromArray($complexity, $ambigous, $antiDouble);
+        return $this->getRandomCharacterFromArray($complexity, $ambiguous, $antiDouble);
     }
 
     /**
