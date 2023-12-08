@@ -14,6 +14,7 @@ use TorneLIB\Utils\Security;
  *
  * @package TorneLIB\Data
  * @since 6.1.0
+ * @version 6.1.5
  */
 class Aes
 {
@@ -383,6 +384,9 @@ class Aes
         }
 
         try {
+            if (!isset($dataToEncrypt) || is_null($dataToEncrypt)) {
+                $dataToEncrypt = '';
+            }
             $return = openssl_encrypt(
                 $forceUtf8 ? utf8_encode($dataToEncrypt) : $dataToEncrypt,
                 $this->getSslCipherType(),
