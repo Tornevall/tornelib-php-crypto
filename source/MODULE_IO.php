@@ -340,6 +340,9 @@ if (!class_exists('MODULE_IO', IO_CLASS_EXISTS_AUTOLOAD) &&
                         $v = $this->getUtf8($v);
                         $newArray[$p] = $v;
                     } else {
+                        if (!isset($v) || is_null($v)) {
+                            $v = '';
+                        }
                         $v = utf8_encode($v);
                         $newArray[$p] = $v;
                     }
