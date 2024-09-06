@@ -324,6 +324,24 @@ if (!class_exists('MODULE_IO', IO_CLASS_EXISTS_AUTOLOAD) &&
         }
 
         /**
+         * Safe encoding with backward compatibility.
+         *
+         * @param $string
+         * @return array|false|string
+         */
+        private function utf8EncodeSafe($string)
+        {
+            // If PHP version is 8.2 or higher, use mb_convert_encoding
+            if (PHP_VERSION_ID >= 80200) {
+                return mb_convert_encoding($string, 'UTF-8', 'ISO-8859-1');
+            } else {
+                // Use utf8_encode for older PHP versions
+                return utf8_encode($string);
+            }
+        }
+
+
+        /**
          * Convert all data to utf8
          *
          * @param array $dataArray
@@ -337,16 +355,17 @@ if (!class_exists('MODULE_IO', IO_CLASS_EXISTS_AUTOLOAD) &&
             if (is_array($dataArray)) {
                 foreach ($dataArray as $p => $v) {
                     if (is_array($v) || is_object($v)) {
+                        // If it's an array or object, call the function recursively
                         $v = $this->getUtf8($v);
                         $newArray[$p] = $v;
                     } else {
                         if (!isset($v) || is_null($v)) {
                             $v = '';
                         }
-                        $v = utf8_encode($v);
+                        // Use the backward-compatible utf8EncodeSafe function
+                        $v = $this->utf8EncodeSafe($v);
                         $newArray[$p] = $v;
                     }
-
                 }
             }
 
