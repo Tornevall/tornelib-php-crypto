@@ -4,3 +4,5 @@ composer.lock
 **.key
 .phpunit.result.cache
 phpunit.xml.bak
+.phpunit.cache/
+composer.phar
