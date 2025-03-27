@@ -10,10 +10,7 @@ require_once(__DIR__ . '/../vendor/autoload.php');
 
 class compressTest extends TestCase
 {
-    /**
-     * @test
-     */
-    public function getGzEncode()
+    public function testGetGzEncode()
     {
         static::assertNotEmpty(
             (new Compress())->getGzEncode('Hello World')
@@ -21,10 +18,9 @@ class compressTest extends TestCase
     }
 
     /**
-     * @test
      * @throws Exception
      */
-    public function getGzDecode()
+    public function testGetGzDecode()
     {
         static::assertSame(
             (new Compress())->getGzDecode((new Compress())->getGzEncode('Hello World')), 'Hello World'
@@ -32,10 +28,9 @@ class compressTest extends TestCase
     }
 
     /**
-     * @test
      * @throws Exception
      */
-    public function getBzDecode()
+    public function testGetBzDecode()
     {
         if ((new Utils\Security())->getFunctionState('bzcompress', false)) {
             static::assertSame(
@@ -51,10 +46,9 @@ class compressTest extends TestCase
     }
 
     /**
-     * @test
      * @throws Exception
      */
-    public function getBzEncode()
+    public function testGetBzEncode()
     {
         if ((new Utils\Security())->getFunctionState('bzcompress', false)) {
             static::assertNotEmpty(
@@ -67,10 +61,7 @@ class compressTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
-    public function getGzEncodeOld()
+    public function testGetGzEncodeOld()
     {
         /** @noinspection PhpUndefinedMethodInspection */
         static::assertNotEmpty(

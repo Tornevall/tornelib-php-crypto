@@ -14,10 +14,9 @@ require_once(__DIR__ . '/../vendor/autoload.php');
 class cryptoTest extends TestCase
 {
     /**
-     * @test
      * Get uppercase only "keycode".
      */
-    public function getMkPassUpper()
+    public function testGetMkPassUpper()
     {
         $cryptoClass = new Crypto();
         $genUpper = $cryptoClass->mkpass(
@@ -33,10 +32,7 @@ class cryptoTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
-    public function getMkPassLong()
+    public function testGetMkPassLong()
     {
         $getLength = 255;
         $pwClass = new Password();
@@ -52,10 +48,9 @@ class cryptoTest extends TestCase
     }
 
     /**
-     * @test
      * Get lowercase only "keycode".
      */
-    public function getMkPassLower()
+    public function testGetMkPassLower()
     {
         $cryptoClass = new Crypto();
         $genLower = $cryptoClass->mkpass(
@@ -72,10 +67,9 @@ class cryptoTest extends TestCase
     }
 
     /**
-     * @test
      * Get mixed keycode (upper+lowercase).
      */
-    public function getMkPassUpperLower()
+    public function testGetMkPassUpperLower()
     {
         $cryptoClass = new Crypto();
         $genUpperAndLower = $cryptoClass->mkpass(
@@ -96,7 +90,7 @@ class cryptoTest extends TestCase
      * @test
      * Get "default" keycode string.
      */
-    public function getMkPassWithoutParams()
+    public function testGetMkPassWithoutParams()
     {
         $cryptoClass = new Crypto();
         $genUpperAndLower = $cryptoClass->mkpass(null, 20);
@@ -111,7 +105,7 @@ class cryptoTest extends TestCase
      * @test
      * Get uppercase keycode directly from password class.
      */
-    public function getMiniPass()
+    public function testGetMiniPass()
     {
         $passwordClass = new Password();
 
@@ -124,7 +118,7 @@ class cryptoTest extends TestCase
      * @test
      * Test if openssl is present as most of the crypto class is depending on it.
      */
-    public function getCryptoLib()
+    public function testGetCryptoLib()
     {
         static::assertSame(
             (new Aes())->getCryptoLib(), Crypto::CRYPTO_SSL
@@ -135,7 +129,7 @@ class cryptoTest extends TestCase
      * @test
      * Test basic encryption. This encryption was in 6.0 similar in both mcrypt and openssl.
      */
-    public function getEncryptedString()
+    public function testGetEncryptedString()
     {
         /** @var Aes $crypto */
         $crypto = (new Crypto())
@@ -155,7 +149,7 @@ class cryptoTest extends TestCase
      * @test
      * Test basic encryption when openssl isn't there.
      */
-    public function getEncryptedStringMcrypt()
+    public function testGetEncryptedStringMcrypt()
     {
         Flag::setFlag('mcrypt', true);
 
@@ -174,7 +168,7 @@ class cryptoTest extends TestCase
     /**
      * @test
      */
-    public function getDecryptedString()
+    public function testGetDecryptedString()
     {
         $encData = (new Crypto())
             ->setAesKeys('MyKey', 'MyIV')
@@ -189,10 +183,7 @@ class cryptoTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
-    public function discoverCipher()
+    public function testDiscoverCipher()
     {
         $crypt = (new Crypto())->setAesKeys('one_key', 'one_aes');
         $encrypted = $crypt->aesEncrypt(
@@ -210,10 +201,9 @@ class cryptoTest extends TestCase
     }
 
     /**
-     * @test
      * @throws ExceptionHandler
      */
-    public function findingMcrypt()
+    public function testFindingMcrypt()
     {
         /** @var Aes $crypto */
         $crypto = new Crypto();
@@ -238,10 +228,7 @@ class cryptoTest extends TestCase
         static::assertTrue(empty($findData));
     }
 
-    /**
-     * @test
-     */
-    public function canCrypto()
+    public function testCanCrypto()
     {
         // For the moment both Aes and Crypto has the Crypto-available constants, but
         // all CRYPTO_UNAVAILABLE should be returned from Crypto::class.
@@ -255,10 +242,9 @@ class cryptoTest extends TestCase
     }
 
     /**
-     * @test
      * @throws ExceptionHandler
      */
-    public function secrets()
+    public function testSecrets()
     {
         $aes = new Aes();
         $aes->setAesKeys('secret', '');
